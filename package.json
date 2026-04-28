@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "start:admin": "cd \"Admin Page/frontend\" && npm start",
+    "start:admin": "cd admin-frontend && npm start",
     "start:client": "cd client-frontend && npm start",
-    "install:admin": "cd \"Admin Page/frontend\" && npm install",
+    "install:admin": "cd admin-frontend && npm install",
     "install:client": "cd client-frontend && npm install",
     "install:all": "npm run install:admin && npm run install:client"
   },
