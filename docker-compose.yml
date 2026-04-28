@@ -33,7 +33,7 @@ services:
     networks:
       - ong-network
 
-  # Admin Panel Frontend (React)
+  # Admin Panel Frontend (React + Vite, served by Nginx in production)
   admin-frontend:
     build:
       context: ./admin-frontend
@@ -41,12 +41,10 @@ services:
     container_name: ong-admin-frontend
     ports:
       - "3001:80"
-    environment:
-      - REACT_APP_API_URL=http://localhost:8080
     networks:
       - ong-network
 
-  # Client/Main Site Frontend (React)
+  # Client/Main Site Frontend (React + Vite, served by Nginx in production)
   client-frontend:
     build:
       context: ./client-frontend
@@ -54,8 +52,6 @@ services:
     container_name: ong-client-frontend
     ports:
       - "3000:80"
-    environment:
-      - REACT_APP_API_URL=http://localhost:8080
     networks:
       - ong-network
 
