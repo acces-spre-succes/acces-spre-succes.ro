@@ -49,4 +49,13 @@ public class TeamMember {
      */
     @Column(name = "display_order", nullable = false)
     private Integer displayOrder = 0;
+
+    /**
+     * Department the member belongs to. Stored as a plain string so admins
+     * can introduce new departments later without a backend deploy. Known
+     * values today: BOARD, EVENTS, IT, SOCIAL_MEDIA, SPONSORS. NULL means
+     * the member is shown on /echipa but not under any department heading.
+     */
+    @Column(length = 64)
+    private String department;
 }

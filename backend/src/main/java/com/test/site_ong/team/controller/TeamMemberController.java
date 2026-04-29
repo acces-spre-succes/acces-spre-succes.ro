@@ -20,7 +20,10 @@ public class TeamMemberController {
     }
 
     @GetMapping
-    public List<TeamMember> getAll() {
+    public List<TeamMember> getAll(@RequestParam(required = false) String department) {
+        if (department != null && !department.isBlank()) {
+            return service.getByDepartment(department);
+        }
         return service.getAll();
     }
 
@@ -38,9 +41,10 @@ public class TeamMemberController {
             @RequestParam(required = false) String role,
             @RequestParam(required = false) String bio,
             @RequestParam(required = false) Integer displayOrder,
+            @RequestParam(required = false) String department,
             @RequestParam(required = false) MultipartFile photo) {
         try {
-            return ResponseEntity.ok(service.create(firstName, lastName, email, role, bio, displayOrder, photo));
+            return ResponseEntity.ok(service.create(firstName, lastName, email, role, bio, displayOrder, department, photo));
         } catch (IOException e) {
             e.printStackTrace();
             return ResponseEntity.status(500).build();
@@ -56,9 +60,10 @@ public class TeamMemberController {
             @RequestParam(required = false) String role,
             @RequestParam(required = false) String bio,
             @RequestParam(required = false) Integer displayOrder,
+            @RequestParam(required = false) String department,
             @RequestParam(required = false) MultipartFile photo) {
         try {
-            TeamMember m = service.update(id, firstName, lastName, email, role, bio, displayOrder, photo);
+            TeamMember m = service.update(id, firstName, lastName, email, role, bio, displayOrder, department, photo);
             return m == null ? ResponseEntity.notFound().build() : ResponseEntity.ok(m);
         } catch (IOException e) {
             e.printStackTrace();

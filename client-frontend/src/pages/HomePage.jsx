@@ -1,10 +1,13 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import axios from 'axios';
 import ColorBends from '../components/ColorBends';
-import { API_BASE_URL } from '../config';
+import { API_BASE_URL, BACKEND_URL } from '../config';
 import './HomePage.css';
+
+const placeholderAvatar = (initial) =>
+  `data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200"%3E%3Crect width="200" height="200" fill="%231d4771"/%3E%3Ctext x="50%25" y="50%25" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-size="60" fill="%23ebbd3a"%3E${encodeURIComponent(initial || '?')}%3C/text%3E%3C/svg%3E`;
 
 const HomePage = () => {
   const { t } = useTranslation();
@@ -18,33 +21,23 @@ const HomePage = () => {
   });
   const [formStatus, setFormStatus] = useState({ type: '', message: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [boardMembers, setBoardMembers] = useState([]);
 
-  const boardMembers = [
-    {
-      id: 1,
-      name: 'Gina Bontaș',
-      position: 'Președinte',
-      image: '/images/board/member1.jpg'
-    },
-    {
-      id: 2,
-      name: 'Adrian Șorecău',
-      position: 'Vicepreședinte',
-      image: '/images/board/member2.jpg'
-    },
-    {
-      id: 3,
-      name: 'Laura Roman',
-      position: 'Secretar',
-      image: '/images/board/member3.jpg'
-    },
-    {
-      id: 4,
-      name: 'Adrian Tiniș',
-      position: 'Membru',
-      image: '/images/board/member4.jpg'
-    }
-  ];
+  useEffect(() => {
+    let cancelled = false;
+    axios
+      .get(`${API_BASE_URL}/team`, { params: { department: 'BOARD' } })
+      .then((res) => {
+        if (!cancelled) setBoardMembers(res.data || []);
+      })
+      .catch((err) => {
+        console.error('Error fetching board members:', err);
+        if (!cancelled) setBoardMembers([]);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -239,52 +232,64 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* Board Members Section */}
-      <section className="board-section section bg-gray">
-        <div className="container">
-          <motion.div
-            className="board-header"
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.3 }}
-            variants={fadeInUp}
-          >
-            <h2 className="section-title">{t('home.board.title')}</h2>
-            <p className="section-subtitle">{t('home.board.subtitle')}</p>
-          </motion.div>
+      {/* Board Members Section - hidden until at least one BOARD member is curated in admin */}
+      {boardMembers.length > 0 && (
+        <section className="board-section section bg-gray">
+          <div className="container">
+            <motion.div
+              className="board-header"
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, amount: 0.3 }}
+              variants={fadeInUp}
+            >
+              <h2 className="section-title">{t('home.board.title')}</h2>
+              <p className="section-subtitle">{t('home.board.subtitle')}</p>
+            </motion.div>
 
-          <motion.div
-            className="board-grid"
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.2 }}
-            variants={staggerContainer}
-          >
-            {boardMembers.map((member) => (
-              <motion.div
-                key={member.id}
-                className="board-card"
-                variants={fadeInUp}
-                whileHover={{ y: -10, transition: { duration: 0.3 } }}
-              >
-                <div className="board-image-wrapper">
-                  <img
-                    src={member.image}
-                    alt={member.name}
-                    onError={(e) => {
-                      e.target.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200"%3E%3Crect width="200" height="200" fill="%231d4771"/%3E%3Ctext x="50%25" y="50%25" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-size="60" fill="%23ebbd3a"%3E' + member.name.charAt(0) + '%3C/text%3E%3C/svg%3E';
-                    }}
-                  />
-                </div>
-                <div className="board-info">
-                  <h3 className="board-name">{member.name}</h3>
-                  <p className="board-position">{member.position}</p>
-                </div>
-              </motion.div>
-            ))}
-          </motion.div>
-        </div>
-      </section>
+            <motion.div
+              className="board-grid"
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, amount: 0.2 }}
+              variants={staggerContainer}
+            >
+              {boardMembers.map((member) => {
+                const fullName = `${member.firstName} ${member.lastName}`.trim();
+                const initial = (member.firstName || member.lastName || '?').charAt(0);
+                return (
+                  <motion.div
+                    key={member.id}
+                    className="board-card"
+                    variants={fadeInUp}
+                    whileHover={{ y: -10, transition: { duration: 0.3 } }}
+                  >
+                    <div className="board-image-wrapper">
+                      <img
+                        src={member.photoPath ? `${BACKEND_URL}${member.photoPath}` : placeholderAvatar(initial)}
+                        alt={fullName}
+                        onError={(e) => {
+                          e.target.src = placeholderAvatar(initial);
+                        }}
+                      />
+                    </div>
+                    <div className="board-info">
+                      <h3 className="board-name">{fullName}</h3>
+                      {member.role && <p className="board-position">{member.role}</p>}
+                      {member.bio && <p className="board-bio">{member.bio}</p>}
+                      {member.email && (
+                        <a className="board-email" href={`mailto:${member.email}`}>
+                          {member.email}
+                        </a>
+                      )}
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </motion.div>
+          </div>
+        </section>
+      )}
 
       {/* Volunteer Section */}
       <section id="volunteer" className="volunteer-section section">

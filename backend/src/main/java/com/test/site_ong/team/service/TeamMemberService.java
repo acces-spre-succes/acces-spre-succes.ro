@@ -30,6 +30,10 @@ public class TeamMemberService {
         return repo.findAllByOrderByDisplayOrderAscIdAsc();
     }
 
+    public List<TeamMember> getByDepartment(String department) {
+        return repo.findAllByDepartmentOrderByDisplayOrderAscIdAsc(department);
+    }
+
     public TeamMember getById(Long id) {
         return repo.findById(id).orElse(null);
     }
@@ -40,6 +44,7 @@ public class TeamMemberService {
                              String role,
                              String bio,
                              Integer displayOrder,
+                             String department,
                              MultipartFile photo) throws IOException {
         TeamMember m = new TeamMember();
         m.setFirstName(firstName);
@@ -48,6 +53,7 @@ public class TeamMemberService {
         m.setRole(role);
         m.setBio(bio);
         m.setDisplayOrder(displayOrder == null ? 0 : displayOrder);
+        m.setDepartment(normalizeDepartment(department));
         if (photo != null && !photo.isEmpty()) {
             m.setPhotoPath(savePhoto(photo));
         }
@@ -61,6 +67,7 @@ public class TeamMemberService {
                              String role,
                              String bio,
                              Integer displayOrder,
+                             String department,
                              MultipartFile photo) throws IOException {
         TeamMember m = repo.findById(id).orElse(null);
         if (m == null) return null;
@@ -70,10 +77,18 @@ public class TeamMemberService {
         m.setRole(role);
         m.setBio(bio);
         if (displayOrder != null) m.setDisplayOrder(displayOrder);
+        m.setDepartment(normalizeDepartment(department));
         if (photo != null && !photo.isEmpty()) {
             m.setPhotoPath(savePhoto(photo));
         }
         return repo.save(m);
+    }
+
+    /** Empty string from a multipart form should clear the department, not store "". */
+    private String normalizeDepartment(String department) {
+        if (department == null) return null;
+        String trimmed = department.trim();
+        return trimmed.isEmpty() ? null : trimmed;
     }
 
     public boolean delete(Long id) {
