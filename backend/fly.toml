@@ -16,7 +16,7 @@
 #   fly certs add api.acces-spre-succes.ro
 #   # then in Cloudflare add a CNAME `api` -> <app-name>.fly.dev (DNS only, gray cloud)
 
-app = "acces-spre-succes-api"
+app = "acces-spre-succes-ro"
 primary_region = "fra"
 
 [build]
