@@ -3,11 +3,8 @@ import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import axios from 'axios';
 import ColorBends from '../components/ColorBends';
+import { API_BASE_URL } from '../config';
 import './HomePage.css';
-
-const API_BASE_URL = process.env.NODE_ENV === 'production'
-  ? '/api'
-  : 'http://localhost:8080/api';
 
 const HomePage = () => {
   const { t } = useTranslation();

@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { API_BASE_URL } from '../config';
+import { API_BASE_URL, BACKEND_URL } from '../config';
 import { authFetch } from '../services/auth';
-
-const BACKEND_URL = process.env.NODE_ENV === 'production' ? '' : 'http://localhost:8080';
 
 export default function Articles() {
     const [articles, setArticles] = useState([]);

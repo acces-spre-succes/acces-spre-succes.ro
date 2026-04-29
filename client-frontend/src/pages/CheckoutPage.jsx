@@ -1,11 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { loadStripe } from '@stripe/stripe-js';
+import { STRIPE_SERVER_URL } from '../config';
 import './CheckoutPage.css';
-
-const STRIPE_SERVER_URL = process.env.NODE_ENV === 'production'
-    ? '/api/stripe'
-    : 'http://localhost:8080/api/stripe';
 //change from the test public key to the live public key
 const stripePromise = loadStripe("pk_test_51SWEdMFx5S2jt0DdcuTOjM8tswLgszDmkcfeLe8lAm9bJVDIrhMPQyrGx72Hslq3552PpwT26h6gtZeF7Dnfjhg300ke2bc5Ll");
 

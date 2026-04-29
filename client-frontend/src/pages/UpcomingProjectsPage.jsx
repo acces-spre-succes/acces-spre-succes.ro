@@ -3,15 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import axios from 'axios';
+import { API_BASE_URL, BACKEND_URL } from '../config';
 import './ProjectsPage.css';
-
-const API_BASE_URL = process.env.NODE_ENV === 'production'
-  ? '/api'
-  : 'http://localhost:8080/api';
-
-const BACKEND_URL = process.env.NODE_ENV === 'production'
-  ? ''
-  : 'http://localhost:8080';
 
 const UpcomingProjectsPage = () => {
   const navigate = useNavigate();

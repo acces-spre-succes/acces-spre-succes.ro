@@ -2,12 +2,8 @@ import React, {useState} from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
+import { API_BASE_URL } from '../config';
 import './DonatePage.css';
-
-
-const API_BASE_URL = process.env.NODE_ENV === 'production'
-    ? '/api'
-    : 'http://localhost:8080/api';
 
 const DonatePage = () => {
   const { t } = useTranslation();

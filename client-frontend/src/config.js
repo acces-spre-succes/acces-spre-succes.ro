@@ -1,4 +1,4 @@
-// Centralised API configuration for the admin panel.
+// Centralised API configuration for the public site.
 //
 // Three modes:
 //   1. Vite dev server (`npm start`)         -> http://localhost:8080
@@ -19,3 +19,4 @@ if (fromEnv) {
 
 export const BACKEND_URL = root;
 export const API_BASE_URL = `${root}/api`;
+export const STRIPE_SERVER_URL = `${root}/api/stripe`;

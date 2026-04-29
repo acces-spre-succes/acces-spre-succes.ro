@@ -1,12 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { API_BASE_URL, STRIPE_SERVER_URL } from '../config';
 import './ReturnPage.css'
-const STRIPE_SERVER_URL = process.env.NODE_ENV === 'production'
-    ? '/api/stripe'
-    : 'http://localhost:8080/api/stripe';
-const API_BASE_URL = process.env.NODE_ENV === 'production'
-    ? '/api'
-    : 'http://localhost:8080/api';
 
 
 
