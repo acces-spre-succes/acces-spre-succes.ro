@@ -38,6 +38,14 @@ const resources = {
           subtitle: "Membrii Consiliului de Administrație",
           position: "Poziție"
         },
+        departments: {
+          title: "Departamentele Noastre",
+          subtitle: "Cunoaște echipa fiecărui departament și alătură-te unde vrei să contribui",
+          apply: "Devino voluntar la acest departament",
+          empty: "Nu există încă membri afișați public pentru acest departament.",
+          previous: "Departamentul anterior",
+          next: "Departamentul următor"
+        },
         volunteer: {
           title: "Devino Voluntar",
           subtitle: "Alătură-te echipei noastre și fă diferența!",
@@ -50,6 +58,7 @@ const resources = {
           message: "Mesaj (opțional)",
           messagePlaceholder: "Spune-ne de ce vrei să devii voluntar...",
           submit: "Trimite Cererea",
+          appliedFor: "Aplici pentru:",
           success: "Mulțumim! Cererea ta a fost trimisă cu succes!",
           error: "A apărut o eroare. Te rugăm să încerci din nou."
         }
@@ -147,6 +156,14 @@ const resources = {
           subtitle: "Board Members",
           position: "Position"
         },
+        departments: {
+          title: "Our Departments",
+          subtitle: "Meet each department's team and join where you want to contribute",
+          apply: "Volunteer for this department",
+          empty: "No members are publicly listed for this department yet.",
+          previous: "Previous department",
+          next: "Next department"
+        },
         volunteer: {
           title: "Become a Volunteer",
           subtitle: "Join our team and make a difference!",
@@ -159,6 +176,7 @@ const resources = {
           message: "Message (optional)",
           messagePlaceholder: "Tell us why you want to become a volunteer...",
           submit: "Submit Application",
+          appliedFor: "Applying for:",
           success: "Thank you! Your application has been submitted successfully!",
           error: "An error occurred. Please try again."
         }

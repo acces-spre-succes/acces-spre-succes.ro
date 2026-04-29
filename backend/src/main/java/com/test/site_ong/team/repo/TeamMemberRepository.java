@@ -6,7 +6,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface TeamMemberRepository extends JpaRepository<TeamMember, Long> {
+
     List<TeamMember> findAllByOrderByDisplayOrderAscIdAsc();
 
-    List<TeamMember> findAllByDepartmentOrderByDisplayOrderAscIdAsc(String department);
+    /** Members assigned to the given department, sorted for display. */
+    List<TeamMember> findByDepartments_IdOrderByDisplayOrderAscIdAsc(Long departmentId);
 }

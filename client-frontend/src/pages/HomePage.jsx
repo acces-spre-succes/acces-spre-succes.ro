@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useLocation } from 'react-router-dom';
 import axios from 'axios';
 import ColorBends from '../components/ColorBends';
 import { API_BASE_URL, BACKEND_URL } from '../config';
@@ -11,40 +12,90 @@ const placeholderAvatar = (initial) =>
 
 const HomePage = () => {
   const { t } = useTranslation();
+  const location = useLocation();
+
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
     email: '',
     phoneNumber: '',
     age: '',
-    description: ''
+    description: '',
+    interestedDepartment: '',
   });
   const [formStatus, setFormStatus] = useState({ type: '', message: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [boardMembers, setBoardMembers] = useState([]);
 
+  // Departments + members for the carousel
+  const [departments, setDepartments] = useState([]);
+  const [allMembers, setAllMembers] = useState([]);
+  const [activeDeptId, setActiveDeptId] = useState(null);
+
+  // Pre-fill the volunteer form's "interestedDepartment" if the URL says so
+  // (e.g. /?department=Evenimente#volunteer from the carousel button or other pages).
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const dept = params.get('department');
+    if (dept) {
+      setFormData((prev) => ({ ...prev, interestedDepartment: dept }));
+    }
+  }, [location.search]);
+
+  // Fetch departments + members in parallel
   useEffect(() => {
     let cancelled = false;
-    axios
-      .get(`${API_BASE_URL}/team`, { params: { department: 'BOARD' } })
-      .then((res) => {
-        if (!cancelled) setBoardMembers(res.data || []);
+    Promise.all([
+      axios.get(`${API_BASE_URL}/departments`).then((r) => r.data || []),
+      axios.get(`${API_BASE_URL}/team`).then((r) => r.data || []),
+    ])
+      .then(([depts, members]) => {
+        if (cancelled) return;
+        setDepartments(depts);
+        setAllMembers(members);
+        // Default to the first department (lowest displayOrder, set in admin)
+        if (depts.length > 0 && activeDeptId == null) {
+          setActiveDeptId(depts[0].id);
+        }
       })
       .catch((err) => {
-        console.error('Error fetching board members:', err);
-        if (!cancelled) setBoardMembers([]);
+        console.error('Error fetching team data:', err);
       });
     return () => {
       cancelled = true;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const activeDepartment = useMemo(
+    () => departments.find((d) => d.id === activeDeptId) || null,
+    [departments, activeDeptId]
+  );
+
+  const activeMembers = useMemo(() => {
+    if (!activeDeptId) return [];
+    return allMembers
+      .filter((m) => (m.departments || []).some((d) => d.id === activeDeptId))
+      .sort((a, b) => (a.displayOrder ?? 0) - (b.displayOrder ?? 0) || a.id - b.id);
+  }, [allMembers, activeDeptId]);
+
+  const goToDeptIndex = (delta) => {
+    if (departments.length === 0) return;
+    const idx = departments.findIndex((d) => d.id === activeDeptId);
+    const next = (idx + delta + departments.length) % departments.length;
+    setActiveDeptId(departments[next].id);
+  };
+
+  const applyToDepartment = (deptName) => {
+    setFormData((prev) => ({ ...prev, interestedDepartment: deptName }));
+    if (typeof window !== 'undefined') {
+      const el = document.getElementById('volunteer');
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value
-    });
+    setFormData({ ...formData, [name]: value });
   };
 
   const handleSubmit = async (e) => {
@@ -53,24 +104,22 @@ const HomePage = () => {
     setFormStatus({ type: '', message: '' });
 
     try {
-      await axios.post(`${API_BASE_URL}/volunteers`, formData);
-      setFormStatus({
-        type: 'success',
-        message: t('home.volunteer.success')
-      });
+      // Backend ignores empty strings for optional fields, but we'd rather send null
+      const payload = { ...formData };
+      if (!payload.interestedDepartment) delete payload.interestedDepartment;
+      await axios.post(`${API_BASE_URL}/volunteers`, payload);
+      setFormStatus({ type: 'success', message: t('home.volunteer.success') });
       setFormData({
         firstName: '',
         lastName: '',
         email: '',
         phoneNumber: '',
         age: '',
-        description: ''
+        description: '',
+        interestedDepartment: '',
       });
     } catch (error) {
-      setFormStatus({
-        type: 'error',
-        message: t('home.volunteer.error')
-      });
+      setFormStatus({ type: 'error', message: t('home.volunteer.error') });
     } finally {
       setIsSubmitting(false);
     }
@@ -78,43 +127,22 @@ const HomePage = () => {
 
   const fadeInUp = {
     hidden: { opacity: 0, y: 30 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.6, ease: 'easeOut' }
-    }
+    visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: 'easeOut' } }
   };
 
   const staggerContainer = {
     hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.2
-      }
-    }
+    visible: { opacity: 1, transition: { staggerChildren: 0.15 } }
   };
 
   const logoAnimation = {
     hidden: { opacity: 0, scale: 0.5, rotate: -180 },
-    visible: {
-      opacity: 1,
-      scale: 1,
-      rotate: 0,
-      transition: {
-        duration: 1,
-        ease: "easeOut"
-      }
-    }
+    visible: { opacity: 1, scale: 1, rotate: 0, transition: { duration: 1, ease: 'easeOut' } }
   };
 
   const floatingAnimation = {
     y: [0, -20, 0],
-    transition: {
-      duration: 3,
-      repeat: Infinity,
-      ease: "easeInOut"
-    }
+    transition: { duration: 3, repeat: Infinity, ease: 'easeInOut' }
   };
 
   return (
@@ -140,22 +168,13 @@ const HomePage = () => {
               animate={floatingAnimation}
             />
           </motion.div>
-          <motion.h1
-            className="hero-title"
-            variants={fadeInUp}
-          >
+          <motion.h1 className="hero-title" variants={fadeInUp}>
             {t('home.hero.title')}
           </motion.h1>
-          <motion.p
-            className="hero-subtitle"
-            variants={fadeInUp}
-          >
+          <motion.p className="hero-subtitle" variants={fadeInUp}>
             {t('home.hero.subtitle')}
           </motion.p>
-          <motion.div
-            className="hero-buttons"
-            variants={fadeInUp}
-          >
+          <motion.div className="hero-buttons" variants={fadeInUp}>
             <a href="#volunteer" className="btn btn-primary">
               {t('home.hero.cta')}
             </a>
@@ -232,9 +251,9 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* Board Members Section - hidden until at least one BOARD member is curated in admin */}
-      {boardMembers.length > 0 && (
-        <section className="board-section section bg-gray">
+      {/* Departments Carousel */}
+      {departments.length > 0 && (
+        <section className="departments-section section bg-gray">
           <div className="container">
             <motion.div
               className="board-header"
@@ -243,50 +262,120 @@ const HomePage = () => {
               viewport={{ once: true, amount: 0.3 }}
               variants={fadeInUp}
             >
-              <h2 className="section-title">{t('home.board.title')}</h2>
-              <p className="section-subtitle">{t('home.board.subtitle')}</p>
+              <h2 className="section-title">{t('home.departments.title')}</h2>
+              <p className="section-subtitle">{t('home.departments.subtitle')}</p>
             </motion.div>
 
-            <motion.div
-              className="board-grid"
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, amount: 0.2 }}
-              variants={staggerContainer}
-            >
-              {boardMembers.map((member) => {
-                const fullName = `${member.firstName} ${member.lastName}`.trim();
-                const initial = (member.firstName || member.lastName || '?').charAt(0);
-                return (
-                  <motion.div
-                    key={member.id}
-                    className="board-card"
-                    variants={fadeInUp}
-                    whileHover={{ y: -10, transition: { duration: 0.3 } }}
-                  >
-                    <div className="board-image-wrapper">
-                      <img
-                        src={member.photoPath ? `${BACKEND_URL}${member.photoPath}` : placeholderAvatar(initial)}
-                        alt={fullName}
-                        onError={(e) => {
-                          e.target.src = placeholderAvatar(initial);
-                        }}
-                      />
-                    </div>
-                    <div className="board-info">
-                      <h3 className="board-name">{fullName}</h3>
-                      {member.role && <p className="board-position">{member.role}</p>}
-                      {member.bio && <p className="board-bio">{member.bio}</p>}
-                      {member.email && (
-                        <a className="board-email" href={`mailto:${member.email}`}>
-                          {member.email}
-                        </a>
+            {/* Tab strip */}
+            <div className="departments-tabs">
+              {departments.map((d) => (
+                <button
+                  key={d.id}
+                  type="button"
+                  className={`department-tab ${d.id === activeDeptId ? 'active' : ''}`}
+                  onClick={() => setActiveDeptId(d.id)}
+                >
+                  {d.name}
+                </button>
+              ))}
+            </div>
+
+            {/* Carousel viewport */}
+            <div className="departments-carousel">
+              <button
+                type="button"
+                className="carousel-arrow carousel-arrow--left"
+                onClick={() => goToDeptIndex(-1)}
+                aria-label={t('home.departments.previous')}
+              >
+                ‹
+              </button>
+
+              <div className="carousel-stage">
+                <AnimatePresence mode="wait">
+                  {activeDepartment && (
+                    <motion.div
+                      key={activeDepartment.id}
+                      className="department-panel"
+                      initial={{ opacity: 0, x: 30 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -30 }}
+                      transition={{ duration: 0.35, ease: 'easeOut' }}
+                    >
+                      <div className="department-panel-header">
+                        <h3 className="department-name">{activeDepartment.name}</h3>
+                        {activeDepartment.description && (
+                          <p className="department-description">{activeDepartment.description}</p>
+                        )}
+                        <button
+                          type="button"
+                          className="btn btn-primary department-apply-btn"
+                          onClick={() => applyToDepartment(activeDepartment.name)}
+                        >
+                          {t('home.departments.apply')}
+                        </button>
+                      </div>
+
+                      {activeMembers.length === 0 ? (
+                        <p className="department-empty">{t('home.departments.empty')}</p>
+                      ) : (
+                        <div className="board-grid">
+                          {activeMembers.map((member) => {
+                            const fullName = `${member.firstName} ${member.lastName}`.trim();
+                            const initial = (member.firstName || member.lastName || '?').charAt(0);
+                            return (
+                              <div key={member.id} className="board-card">
+                                <div className="board-image-wrapper">
+                                  <img
+                                    src={member.photoPath ? `${BACKEND_URL}${member.photoPath}` : placeholderAvatar(initial)}
+                                    alt={fullName}
+                                    onError={(e) => {
+                                      e.target.src = placeholderAvatar(initial);
+                                    }}
+                                  />
+                                </div>
+                                <div className="board-info">
+                                  <h3 className="board-name">{fullName}</h3>
+                                  {member.role && <p className="board-position">{member.role}</p>}
+                                  {member.bio && <p className="board-bio">{member.bio}</p>}
+                                  {member.email && (
+                                    <a className="board-email" href={`mailto:${member.email}`}>
+                                      {member.email}
+                                    </a>
+                                  )}
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
                       )}
-                    </div>
-                  </motion.div>
-                );
-              })}
-            </motion.div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+
+              <button
+                type="button"
+                className="carousel-arrow carousel-arrow--right"
+                onClick={() => goToDeptIndex(1)}
+                aria-label={t('home.departments.next')}
+              >
+                ›
+              </button>
+            </div>
+
+            {/* Dot indicators */}
+            <div className="departments-dots">
+              {departments.map((d) => (
+                <button
+                  key={d.id}
+                  type="button"
+                  className={`carousel-dot ${d.id === activeDeptId ? 'active' : ''}`}
+                  onClick={() => setActiveDeptId(d.id)}
+                  aria-label={d.name}
+                />
+              ))}
+            </div>
           </div>
         </section>
       )}
@@ -311,6 +400,20 @@ const HomePage = () => {
               onSubmit={handleSubmit}
               variants={fadeInUp}
             >
+              {formData.interestedDepartment && (
+                <div className="volunteer-target">
+                  <span>{t('home.volunteer.appliedFor')}</span>
+                  <strong>{formData.interestedDepartment}</strong>
+                  <button
+                    type="button"
+                    className="volunteer-target-clear"
+                    onClick={() => setFormData({ ...formData, interestedDepartment: '' })}
+                  >
+                    ×
+                  </button>
+                </div>
+              )}
+
               <div className="form-row">
                 <div className="form-group">
                   <label htmlFor="firstName">{t('home.volunteer.firstName')}</label>

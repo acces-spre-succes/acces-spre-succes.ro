@@ -2,17 +2,6 @@ import React, { useEffect, useState } from "react";
 import { API_BASE_URL, BACKEND_URL } from "../config";
 import { authFetch } from "../services/auth";
 
-export const DEPARTMENTS = [
-    { value: "BOARD", label: "Consiliu director (afișat pe homepage)" },
-    { value: "EVENTS", label: "Evenimente" },
-    { value: "IT", label: "IT" },
-    { value: "SOCIAL_MEDIA", label: "Social Media" },
-    { value: "SPONSORS", label: "Sponsori" },
-];
-
-const labelOf = (value) =>
-    DEPARTMENTS.find((d) => d.value === value)?.label || "Fără departament";
-
 const emptyForm = {
     firstName: "",
     lastName: "",
@@ -20,12 +9,13 @@ const emptyForm = {
     role: "",
     bio: "",
     displayOrder: "",
-    department: "",
+    departmentIds: [],
     photo: null,
 };
 
 export default function TeamMembers() {
     const [members, setMembers] = useState([]);
+    const [departments, setDepartments] = useState([]);
     const [filter, setFilter] = useState("ALL");
     const [form, setForm] = useState(emptyForm);
     const [editingId, setEditingId] = useState(null);
@@ -33,6 +23,7 @@ export default function TeamMembers() {
 
     useEffect(() => {
         loadMembers();
+        loadDepartments();
     }, []);
 
     const loadMembers = () => {
@@ -40,6 +31,13 @@ export default function TeamMembers() {
             .then((res) => res.json())
             .then(setMembers)
             .catch((err) => console.error("Eroare la preluare echipa:", err));
+    };
+
+    const loadDepartments = () => {
+        authFetch(`${API_BASE_URL}/departments`)
+            .then((res) => res.json())
+            .then(setDepartments)
+            .catch((err) => console.error("Eroare la preluare departamente:", err));
     };
 
     const startEdit = (m) => {
@@ -51,7 +49,7 @@ export default function TeamMembers() {
             role: m.role || "",
             bio: m.bio || "",
             displayOrder: m.displayOrder ?? "",
-            department: m.department || "",
+            departmentIds: (m.departments || []).map((d) => d.id),
             photo: null,
         });
     };
@@ -59,6 +57,18 @@ export default function TeamMembers() {
     const cancelEdit = () => {
         setEditingId(null);
         setForm(emptyForm);
+    };
+
+    const toggleDepartment = (id) => {
+        setForm((prev) => {
+            const has = prev.departmentIds.includes(id);
+            return {
+                ...prev,
+                departmentIds: has
+                    ? prev.departmentIds.filter((x) => x !== id)
+                    : [...prev.departmentIds, id],
+            };
+        });
     };
 
     const handleSubmit = async () => {
@@ -75,7 +85,9 @@ export default function TeamMembers() {
             if (form.role) fd.append("role", form.role);
             if (form.bio) fd.append("bio", form.bio);
             if (form.displayOrder !== "") fd.append("displayOrder", form.displayOrder);
-            fd.append("department", form.department || "");
+            // Backend always replaces the full set with whatever we send; missing
+            // means "no departments". So we just append every selected id.
+            form.departmentIds.forEach((id) => fd.append("departmentIds", String(id)));
             if (form.photo) fd.append("photo", form.photo);
 
             const url = editingId
@@ -109,8 +121,8 @@ export default function TeamMembers() {
         filter === "ALL"
             ? members
             : filter === "NONE"
-                ? members.filter((m) => !m.department)
-                : members.filter((m) => m.department === filter);
+                ? members.filter((m) => !m.departments || m.departments.length === 0)
+                : members.filter((m) => (m.departments || []).some((d) => d.id === Number(filter)));
 
     return (
         <div className="content-section active">
@@ -146,15 +158,41 @@ export default function TeamMembers() {
                     value={form.bio}
                     onChange={(e) => setForm({ ...form, bio: e.target.value })}
                 />
-                <select
-                    value={form.department}
-                    onChange={(e) => setForm({ ...form, department: e.target.value })}
-                >
-                    <option value="">Fără departament</option>
-                    {DEPARTMENTS.map((d) => (
-                        <option key={d.value} value={d.value}>{d.label}</option>
-                    ))}
-                </select>
+
+                <div>
+                    <p style={{ margin: "0 0 6px 0", fontWeight: 600, color: "#1a202c" }}>
+                        Departamente (poate fi membru în mai multe)
+                    </p>
+                    {departments.length === 0 ? (
+                        <p style={{ color: "#888", fontSize: "13px" }}>
+                            Nu există departamente încă. Creează-le din secțiunea Departamente.
+                        </p>
+                    ) : (
+                        <div style={{ display: "flex", flexWrap: "wrap", gap: "8px 16px" }}>
+                            {departments.map((d) => (
+                                <label
+                                    key={d.id}
+                                    style={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: "6px",
+                                        cursor: "pointer",
+                                        fontSize: "14px",
+                                    }}
+                                >
+                                    <input
+                                        type="checkbox"
+                                        style={{ width: "auto", margin: 0 }}
+                                        checked={form.departmentIds.includes(d.id)}
+                                        onChange={() => toggleDepartment(d.id)}
+                                    />
+                                    {d.name}
+                                </label>
+                            ))}
+                        </div>
+                    )}
+                </div>
+
                 <input
                     type="number"
                     placeholder="Ordine afișare (0 = primul)"
@@ -180,10 +218,14 @@ export default function TeamMembers() {
 
             <div style={{ marginTop: "30px", display: "flex", gap: "12px", alignItems: "center", flexWrap: "wrap" }}>
                 <h2 style={{ margin: 0 }}>Membri actuali</h2>
-                <select value={filter} onChange={(e) => setFilter(e.target.value)} style={{ width: "auto", flex: "0 0 auto" }}>
+                <select
+                    value={filter}
+                    onChange={(e) => setFilter(e.target.value)}
+                    style={{ width: "auto", flex: "0 0 auto" }}
+                >
                     <option value="ALL">Toate departamentele</option>
-                    {DEPARTMENTS.map((d) => (
-                        <option key={d.value} value={d.value}>{d.label}</option>
+                    {departments.map((d) => (
+                        <option key={d.id} value={d.id}>{d.name}</option>
                     ))}
                     <option value="NONE">Fără departament</option>
                 </select>
@@ -209,7 +251,11 @@ export default function TeamMembers() {
                                     <p>{m.email}</p>
                                     {m.bio && <p style={{ color: "#555" }}>{m.bio}</p>}
                                     <p style={{ fontSize: "12px", color: "#888" }}>
-                                        Departament: <strong>{labelOf(m.department)}</strong> · Ordine: {m.displayOrder ?? 0}
+                                        Departamente:{" "}
+                                        {m.departments && m.departments.length > 0
+                                            ? m.departments.map((d) => d.name).join(", ")
+                                            : "(niciunul)"}
+                                        {" "}· Ordine: {m.displayOrder ?? 0}
                                     </p>
                                 </div>
                             </div>

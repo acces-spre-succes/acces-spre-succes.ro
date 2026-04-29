@@ -19,10 +19,14 @@ public class TeamMemberController {
         this.service = service;
     }
 
+    /**
+     * GET /api/team
+     * GET /api/team?departmentId=42  -> only members assigned to that department
+     */
     @GetMapping
-    public List<TeamMember> getAll(@RequestParam(required = false) String department) {
-        if (department != null && !department.isBlank()) {
-            return service.getByDepartment(department);
+    public List<TeamMember> getAll(@RequestParam(required = false) Long departmentId) {
+        if (departmentId != null) {
+            return service.getByDepartment(departmentId);
         }
         return service.getAll();
     }
@@ -41,10 +45,10 @@ public class TeamMemberController {
             @RequestParam(required = false) String role,
             @RequestParam(required = false) String bio,
             @RequestParam(required = false) Integer displayOrder,
-            @RequestParam(required = false) String department,
+            @RequestParam(name = "departmentIds", required = false) List<Long> departmentIds,
             @RequestParam(required = false) MultipartFile photo) {
         try {
-            return ResponseEntity.ok(service.create(firstName, lastName, email, role, bio, displayOrder, department, photo));
+            return ResponseEntity.ok(service.create(firstName, lastName, email, role, bio, displayOrder, departmentIds, photo));
         } catch (IOException e) {
             e.printStackTrace();
             return ResponseEntity.status(500).build();
@@ -60,10 +64,10 @@ public class TeamMemberController {
             @RequestParam(required = false) String role,
             @RequestParam(required = false) String bio,
             @RequestParam(required = false) Integer displayOrder,
-            @RequestParam(required = false) String department,
+            @RequestParam(name = "departmentIds", required = false) List<Long> departmentIds,
             @RequestParam(required = false) MultipartFile photo) {
         try {
-            TeamMember m = service.update(id, firstName, lastName, email, role, bio, displayOrder, department, photo);
+            TeamMember m = service.update(id, firstName, lastName, email, role, bio, displayOrder, departmentIds, photo);
             return m == null ? ResponseEntity.notFound().build() : ResponseEntity.ok(m);
         } catch (IOException e) {
             e.printStackTrace();

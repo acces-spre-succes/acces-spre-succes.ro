@@ -1,9 +1,14 @@
 package com.test.site_ong.team.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.test.site_ong.departments.model.Department;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * A curated team member shown publicly on the website (echipă page).
@@ -51,11 +56,22 @@ public class TeamMember {
     private Integer displayOrder = 0;
 
     /**
-     * Department the member belongs to. Stored as a plain string so admins
-     * can introduce new departments later without a backend deploy. Known
-     * values today: BOARD, EVENTS, IT, SOCIAL_MEDIA, SPONSORS. NULL means
-     * the member is shown on /echipa but not under any department heading.
+     * Departments the member belongs to. M:N because volunteers commonly
+     * sit on multiple committees (e.g. someone in IT can also help with
+     * Events). The join table is owned on this side; deleting a member
+     * automatically removes their join rows. To delete a Department, the
+     * service first clears it from each member's set (see
+     * DepartmentService.delete).
+     *
+     * @JsonIgnoreProperties stops Jackson recursing back into the Set<TeamMember>
+     * inverse side if we ever add it to Department.
      */
-    @Column(length = 64)
-    private String department;
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "team_member_departments",
+            joinColumns = @JoinColumn(name = "team_member_id"),
+            inverseJoinColumns = @JoinColumn(name = "department_id")
+    )
+    @JsonIgnoreProperties("members")
+    private Set<Department> departments = new HashSet<>();
 }

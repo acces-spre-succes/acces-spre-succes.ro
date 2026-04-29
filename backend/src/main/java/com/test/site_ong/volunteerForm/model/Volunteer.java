@@ -44,6 +44,17 @@ public class Volunteer {
     @Column(name = "description")
     private String description;
 
+    /**
+     * Optional name of the department the applicant is interested in.
+     * Filled when the form is opened from a department page on the
+     * public site (Departamente carousel). Stored as plain text rather
+     * than an FK so historical records survive a department rename or
+     * delete.
+     */
+    @Size(max = 120)
+    @Column(name = "interested_department")
+    private String interestedDepartment;
+
 
     public String getFullName() {
         return firstName + " " + lastName;
@@ -103,6 +114,14 @@ public class Volunteer {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getInterestedDepartment() {
+        return interestedDepartment;
+    }
+
+    public void setInterestedDepartment(String interestedDepartment) {
+        this.interestedDepartment = interestedDepartment;
     }
 
     //a status could be added, to be discussed

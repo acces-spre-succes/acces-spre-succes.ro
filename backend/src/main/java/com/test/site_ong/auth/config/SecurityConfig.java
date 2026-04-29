@@ -92,6 +92,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/api/upcoming-projects", "/api/upcoming-projects/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/completed-projects", "/api/completed-projects/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/team", "/api/team/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/departments", "/api/departments/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/comments/**").permitAll()
 
                 // Public form submissions

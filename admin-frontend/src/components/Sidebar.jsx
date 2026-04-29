@@ -3,6 +3,7 @@ import React from "react";
 const ITEMS = [
     { id: "articles", label: "Articole" },
     { id: "team", label: "Echipă" },
+    { id: "departments", label: "Departamente" },
     { id: "volunteers", label: "Cereri voluntariat" },
     { id: "upcomingProjects", label: "Proiecte viitoare" },
     { id: "completedProjects", label: "Proiecte finalizate" },

@@ -4,6 +4,7 @@ import Sidebar from "./components/Sidebar";
 import Articles from "./components/Articles";
 import Volunteers from "./components/Volunteers";
 import TeamMembers from "./components/TeamMembers";
+import Departments from "./components/Departments";
 import Donators from "./components/Donators";
 import Settings from "./components/Settings";
 import "./styles/style.css";
@@ -59,6 +60,7 @@ export default function App() {
                 <main className="main-content">
                     {activeSection === "articles" && <Articles />}
                     {activeSection === "team" && <TeamMembers />}
+                    {activeSection === "departments" && <Departments />}
                     {activeSection === "volunteers" && <Volunteers />}
                     {activeSection === "upcomingProjects" && <UpcomingProjects />}
                     {activeSection === "completedProjects" && <CompletedProjects />}

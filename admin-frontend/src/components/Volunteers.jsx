@@ -28,17 +28,18 @@ export default function Volunteers() {
                 <thead>
                 <tr>
                     <th>Nume</th>
-                    <th>Varsta</th>
+                    <th>Vârstă</th>
                     <th>Email</th>
                     <th>Telefon</th>
+                    <th>Departament dorit</th>
                     <th>Descriere</th>
-                    <th>Actiuni</th>
+                    <th>Acțiuni</th>
                 </tr>
                 </thead>
                 <tbody>
                 {volunteers.length === 0 ? (
                     <tr>
-                        <td colSpan="6">Nu exista voluntari.</td>
+                        <td colSpan="7">Nu există voluntari.</td>
                     </tr>
                 ) : (
                     volunteers.map(v => (
@@ -47,9 +48,10 @@ export default function Volunteers() {
                             <td>{v.age}</td>
                             <td>{v.email}</td>
                             <td>{v.phoneNumber}</td>
+                            <td>{v.interestedDepartment || "—"}</td>
                             <td>{v.description}</td>
                             <td>
-                                <button className="button-delete" onClick={() => handleDeleteVolunteer(v.id)}>Sterge</button>
+                                <button className="button-delete" onClick={() => handleDeleteVolunteer(v.id)}>Șterge</button>
                             </td>
                         </tr>
                     ))

@@ -1,5 +1,7 @@
 package com.test.site_ong.team.service;
 
+import com.test.site_ong.departments.model.Department;
+import com.test.site_ong.departments.repo.DepartmentRepository;
 import com.test.site_ong.team.model.TeamMember;
 import com.test.site_ong.team.repo.TeamMemberRepository;
 import org.springframework.beans.factory.annotation.Value;
@@ -8,17 +10,22 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class TeamMemberService {
 
     private final TeamMemberRepository repo;
+    private final DepartmentRepository departmentRepo;
     private final String uploadDir;
 
     public TeamMemberService(TeamMemberRepository repo,
+                             DepartmentRepository departmentRepo,
                              @Value("${file.upload-dir:uploads}") String uploadDir) {
         this.repo = repo;
+        this.departmentRepo = departmentRepo;
         this.uploadDir = uploadDir;
         File dir = new File(uploadDir);
         if (!dir.exists()) {
@@ -30,8 +37,8 @@ public class TeamMemberService {
         return repo.findAllByOrderByDisplayOrderAscIdAsc();
     }
 
-    public List<TeamMember> getByDepartment(String department) {
-        return repo.findAllByDepartmentOrderByDisplayOrderAscIdAsc(department);
+    public List<TeamMember> getByDepartment(Long departmentId) {
+        return repo.findByDepartments_IdOrderByDisplayOrderAscIdAsc(departmentId);
     }
 
     public TeamMember getById(Long id) {
@@ -44,7 +51,7 @@ public class TeamMemberService {
                              String role,
                              String bio,
                              Integer displayOrder,
-                             String department,
+                             List<Long> departmentIds,
                              MultipartFile photo) throws IOException {
         TeamMember m = new TeamMember();
         m.setFirstName(firstName);
@@ -53,7 +60,7 @@ public class TeamMemberService {
         m.setRole(role);
         m.setBio(bio);
         m.setDisplayOrder(displayOrder == null ? 0 : displayOrder);
-        m.setDepartment(normalizeDepartment(department));
+        m.setDepartments(resolveDepartments(departmentIds));
         if (photo != null && !photo.isEmpty()) {
             m.setPhotoPath(savePhoto(photo));
         }
@@ -67,7 +74,7 @@ public class TeamMemberService {
                              String role,
                              String bio,
                              Integer displayOrder,
-                             String department,
+                             List<Long> departmentIds,
                              MultipartFile photo) throws IOException {
         TeamMember m = repo.findById(id).orElse(null);
         if (m == null) return null;
@@ -77,24 +84,25 @@ public class TeamMemberService {
         m.setRole(role);
         m.setBio(bio);
         if (displayOrder != null) m.setDisplayOrder(displayOrder);
-        m.setDepartment(normalizeDepartment(department));
+        // The admin form always knows the full desired set, so a missing /
+        // empty `departmentIds` param is treated as "clear all". Keep this in
+        // sync if a partial-update API ever becomes necessary.
+        m.setDepartments(resolveDepartments(departmentIds));
         if (photo != null && !photo.isEmpty()) {
             m.setPhotoPath(savePhoto(photo));
         }
         return repo.save(m);
     }
 
-    /** Empty string from a multipart form should clear the department, not store "". */
-    private String normalizeDepartment(String department) {
-        if (department == null) return null;
-        String trimmed = department.trim();
-        return trimmed.isEmpty() ? null : trimmed;
-    }
-
     public boolean delete(Long id) {
         if (!repo.existsById(id)) return false;
         repo.deleteById(id);
         return true;
+    }
+
+    private Set<Department> resolveDepartments(List<Long> ids) {
+        if (ids == null || ids.isEmpty()) return new HashSet<>();
+        return new HashSet<>(departmentRepo.findAllById(ids));
     }
 
     private String savePhoto(MultipartFile photo) throws IOException {
