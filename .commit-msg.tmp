@@ -1,0 +1,20 @@
+Remove repo-root package.json so Vercel uses the right one
+
+The Vercel build kept failing with `vite: command not found` because
+its install step printed `added 1 package in 1s` -- it was installing
+the *repo-root* package.json (one dependency: @stripe/stripe-js)
+instead of `client-frontend/package.json` (which actually has Vite
+and friends in its devDependencies).
+
+Even with a Root Directory of `client-frontend` set in the Vercel UI,
+the presence of a top-level package.json was enough to confuse the
+modern `vercel build` flow into installing from the wrong place.
+
+The root package.json was just a convenience wrapper exposing
+`npm run start:admin` / `start:client` / `install:*` aliases. Local
+development now goes through Docker Compose (`docker compose up`) or
+through `cd client-frontend && npm start`, so the wrapper is no longer
+needed.
+
+The single dependency it declared (@stripe/stripe-js) is already a
+real dependency of client-frontend, so nothing is lost.
