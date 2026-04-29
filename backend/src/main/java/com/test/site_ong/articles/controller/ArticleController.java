@@ -46,6 +46,22 @@ public class ArticleController {
         }
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<Article> updateArticle(
+            @PathVariable Long id,
+            @RequestParam(required = false) String title,
+            @RequestParam(required = false) String description,
+            @RequestParam(required = false) MultipartFile image
+    ){
+        try {
+            Article updated = articleService.updateArticle(id, title, description, image);
+            return updated == null ? ResponseEntity.notFound().build() : ResponseEntity.ok(updated);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).build();
+        }
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Article> deleteArticle(@PathVariable Long id){
         articleService.deleteArticle(id);

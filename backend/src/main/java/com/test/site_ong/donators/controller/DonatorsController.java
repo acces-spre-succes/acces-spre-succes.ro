@@ -94,6 +94,11 @@ public class DonatorsController {
     }
 
 
+    @GetMapping
+    public ResponseEntity<List<Donators>> getAllDonators() {
+        return ResponseEntity.ok(donatorsService.findAllDonators());
+    }
+
     @GetMapping("by-date")
     public ResponseEntity<?> getDonatorsBySubmitDate(@RequestParam LocalDateTime startDate, LocalDateTime endDate) {
         List<Donators> donatorsByDate = donatorsService.findBySubmitDate(startDate, endDate);

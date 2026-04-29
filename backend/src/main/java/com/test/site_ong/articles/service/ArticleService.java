@@ -38,15 +38,30 @@ public class ArticleService {
         article.setDescription(description);
 
         if(image!=null && !image.isEmpty()){
-            String fileName = System.currentTimeMillis()+ "_" + image.getOriginalFilename();
-            File dest = new File(uploadDir + "/" + fileName);
-            image.transferTo(dest);
-            article.setImagePath("/uploads/"+fileName);
+            article.setImagePath(saveImage(image));
+        }
+        return articleRepository.save(article);
+    }
+
+    public Article updateArticle(Long id, String title, String description, MultipartFile image) throws IOException {
+        Article article = articleRepository.findById(id).orElse(null);
+        if (article == null) return null;
+        if (title != null) article.setTitle(title);
+        if (description != null) article.setDescription(description);
+        if (image != null && !image.isEmpty()) {
+            article.setImagePath(saveImage(image));
         }
         return articleRepository.save(article);
     }
 
     public void deleteArticle(Long id){
         articleRepository.deleteById(id);
+    }
+
+    private String saveImage(MultipartFile image) throws IOException {
+        String fileName = System.currentTimeMillis() + "_" + image.getOriginalFilename();
+        File dest = new File(uploadDir + "/" + fileName);
+        image.transferTo(dest);
+        return "/uploads/" + fileName;
     }
 }
