@@ -323,7 +323,7 @@ const DonatePage = () => {
                 </svg>
               </div>
               <p className="contact-text">{t('donate.contact')}</p>
-              <a href="mailto:contact@accesspresucces.ro" className="contact-email">
+              <a href="mailto:admin@acces-spre-succes.ro" className="contact-email">
                 {t('donate.email')}
               </a>
             </motion.div>

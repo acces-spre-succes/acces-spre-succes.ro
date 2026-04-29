@@ -96,7 +96,7 @@ const resources = {
         alternative: "Alternative de Donație",
         bank: "Transfer Bancar",
         contact: "Pentru informații despre donații, contactează-ne la:",
-        email: "contact@accesspresucces.ro"
+        email: "admin@acces-spre-succes.ro"
       },
       // Common
       common: {
@@ -204,7 +204,7 @@ const resources = {
         alternative: "Alternative Donation Methods",
         bank: "Bank Transfer",
         contact: "For information about donations, contact us at:",
-        email: "contact@accesstosuccess.ro"
+        email: "admin@acces-spre-succes.ro"
       },
       // Common
       common: {
