@@ -393,43 +393,51 @@
   }
 }
 
-/* Volunteer chip showing which dept is being applied to */
-.volunteer-target {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  background: rgba(255, 255, 255, 0.18);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: 999px;
-  padding: 0.4rem 0.5rem 0.4rem 1rem;
-  margin: 0 auto 1.5rem auto;
-  width: fit-content;
+/* Volunteer form: multi-select pills for departments of interest */
+.volunteer-departments-label {
+  display: block;
   font-size: 0.95rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
   color: var(--white);
 }
 
-.volunteer-target strong {
+.volunteer-departments-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.volunteer-dept-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.9rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: var(--white);
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+
+.volunteer-dept-pill:hover {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.volunteer-dept-pill.checked {
+  background: var(--secondary);
+  color: var(--primary-dark);
+  border-color: var(--secondary);
   font-weight: 600;
 }
 
-.volunteer-target-clear {
-  background: rgba(255, 255, 255, 0.2);
-  color: var(--white);
-  border: none;
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  cursor: pointer;
-  font-size: 1.1rem;
-  line-height: 1;
-  padding: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.volunteer-target-clear:hover {
-  background: rgba(255, 255, 255, 0.3);
+.volunteer-dept-pill input[type="checkbox"] {
+  width: auto;
+  margin: 0;
+  accent-color: var(--primary);
 }
 
 /* Volunteer Section */

@@ -353,6 +353,81 @@ textarea {
     margin-bottom: 10px;
 }
 
+/* ----- Cropper modal ----- */
+.cropper-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.75);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+}
+
+.cropper-modal {
+    background: var(--color-surface);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-md);
+    width: 100%;
+    max-width: 560px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.cropper-modal__header {
+    padding: 18px 22px 8px 22px;
+}
+
+.cropper-modal__header h3 {
+    margin: 0 0 6px 0;
+    color: var(--color-text);
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.cropper-modal__hint {
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: 0.88rem;
+}
+
+.cropper-stage {
+    position: relative;
+    width: 100%;
+    height: 360px;
+    background: #000;
+}
+
+.cropper-controls {
+    padding: 14px 22px 0 22px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.cropper-zoom-label {
+    font-size: 0.9rem;
+    color: var(--color-text-muted);
+    flex: 0 0 auto;
+}
+
+.cropper-controls input[type="range"] {
+    flex: 1;
+    width: auto;
+    padding: 0;
+    border: none;
+    background: transparent;
+}
+
+.cropper-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 16px 22px 18px 22px;
+}
+
 /* Small screens */
 @media (max-width: 720px) {
     .admin-content {

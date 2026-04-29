@@ -9,6 +9,7 @@ export default function Articles() {
     const [form, setForm] = useState(emptyForm);
     const [editingId, setEditingId] = useState(null);
     const [busy, setBusy] = useState(false);
+    const [formNonce, setFormNonce] = useState(0);
 
     useEffect(() => {
         loadArticles();
@@ -24,11 +25,13 @@ export default function Articles() {
     const startEdit = (a) => {
         setEditingId(a.id);
         setForm({ title: a.title || "", description: a.description || "", image: null });
+        setFormNonce((n) => n + 1);
     };
 
     const cancelEdit = () => {
         setEditingId(null);
         setForm(emptyForm);
+        setFormNonce((n) => n + 1);
     };
 
     const handleSubmit = async () => {
@@ -50,12 +53,19 @@ export default function Articles() {
             const method = editingId ? "PUT" : "POST";
 
             const res = await authFetch(url, { method, body: fd });
-            if (!res.ok) throw new Error("Salvare eșuată");
+            if (!res.ok) {
+                let detail = `${res.status} ${res.statusText}`;
+                try {
+                    const text = await res.text();
+                    if (text) detail += `\n\n${text.slice(0, 400)}`;
+                } catch (_) { /* ignore */ }
+                throw new Error(detail);
+            }
             cancelEdit();
             loadArticles();
         } catch (err) {
             console.error(err);
-            alert("Nu s-a putut salva articolul.");
+            alert("Nu s-a putut salva articolul.\n\n" + (err.message || ""));
         } finally {
             setBusy(false);
         }
@@ -90,6 +100,7 @@ export default function Articles() {
                     onChange={(e) => setForm({ ...form, description: e.target.value })}
                 />
                 <input
+                    key={formNonce}
                     type="file"
                     accept="image/*"
                     onChange={(e) => setForm({ ...form, image: e.target.files[0] })}

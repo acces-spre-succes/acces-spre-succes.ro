@@ -45,14 +45,14 @@ public class Volunteer {
     private String description;
 
     /**
-     * Optional name of the department the applicant is interested in.
-     * Filled when the form is opened from a department page on the
-     * public site (Departamente carousel). Stored as plain text rather
-     * than an FK so historical records survive a department rename or
-     * delete.
+     * Comma-separated list of department names the applicant is interested
+     * in (e.g. "IT,Evenimente"). Stored as text rather than an FK / join
+     * table so historical records survive a department rename or delete.
+     * The volunteer form on the public site renders a checkbox group from
+     * the live /api/departments list and joins the selected names here.
      */
-    @Size(max = 120)
-    @Column(name = "interested_department")
+    @Size(max = 500)
+    @Column(name = "interested_department", length = 500)
     private String interestedDepartment;
 
 

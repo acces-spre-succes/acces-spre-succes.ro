@@ -21,8 +21,10 @@ const HomePage = () => {
     phoneNumber: '',
     age: '',
     description: '',
-    interestedDepartment: '',
   });
+  // Names of departments the applicant ticked. Pre-populated when arriving
+  // via "?department=Foo" or via the carousel's apply button.
+  const [interestedDepartments, setInterestedDepartments] = useState([]);
   const [formStatus, setFormStatus] = useState({ type: '', message: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -31,13 +33,15 @@ const HomePage = () => {
   const [allMembers, setAllMembers] = useState([]);
   const [activeDeptId, setActiveDeptId] = useState(null);
 
-  // Pre-fill the volunteer form's "interestedDepartment" if the URL says so
+  // Pre-tick the volunteer form's department checkbox(es) if the URL says so
   // (e.g. /?department=Evenimente#volunteer from the carousel button or other pages).
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const dept = params.get('department');
     if (dept) {
-      setFormData((prev) => ({ ...prev, interestedDepartment: dept }));
+      setInterestedDepartments((prev) =>
+        prev.includes(dept) ? prev : [...prev, dept]
+      );
     }
   }, [location.search]);
 
@@ -86,11 +90,21 @@ const HomePage = () => {
   };
 
   const applyToDepartment = (deptName) => {
-    setFormData((prev) => ({ ...prev, interestedDepartment: deptName }));
+    setInterestedDepartments((prev) =>
+      prev.includes(deptName) ? prev : [...prev, deptName]
+    );
     if (typeof window !== 'undefined') {
       const el = document.getElementById('volunteer');
       if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
+  };
+
+  const toggleInterestedDepartment = (deptName) => {
+    setInterestedDepartments((prev) =>
+      prev.includes(deptName)
+        ? prev.filter((n) => n !== deptName)
+        : [...prev, deptName]
+    );
   };
 
   const handleInputChange = (e) => {
@@ -104,9 +118,12 @@ const HomePage = () => {
     setFormStatus({ type: '', message: '' });
 
     try {
-      // Backend ignores empty strings for optional fields, but we'd rather send null
       const payload = { ...formData };
-      if (!payload.interestedDepartment) delete payload.interestedDepartment;
+      if (interestedDepartments.length > 0) {
+        // Backend stores this as a single VARCHAR(500); CSV is the cheapest
+        // representation that survives department renames/deletes.
+        payload.interestedDepartment = interestedDepartments.join(', ');
+      }
       await axios.post(`${API_BASE_URL}/volunteers`, payload);
       setFormStatus({ type: 'success', message: t('home.volunteer.success') });
       setFormData({
@@ -116,8 +133,8 @@ const HomePage = () => {
         phoneNumber: '',
         age: '',
         description: '',
-        interestedDepartment: '',
       });
+      setInterestedDepartments([]);
     } catch (error) {
       setFormStatus({ type: 'error', message: t('home.volunteer.error') });
     } finally {
@@ -400,17 +417,29 @@ const HomePage = () => {
               onSubmit={handleSubmit}
               variants={fadeInUp}
             >
-              {formData.interestedDepartment && (
-                <div className="volunteer-target">
-                  <span>{t('home.volunteer.appliedFor')}</span>
-                  <strong>{formData.interestedDepartment}</strong>
-                  <button
-                    type="button"
-                    className="volunteer-target-clear"
-                    onClick={() => setFormData({ ...formData, interestedDepartment: '' })}
-                  >
-                    ×
-                  </button>
+              {departments.length > 0 && (
+                <div className="form-group volunteer-departments">
+                  <label className="volunteer-departments-label">
+                    {t('home.volunteer.departmentsLabel')}
+                  </label>
+                  <div className="volunteer-departments-grid">
+                    {departments.map((d) => {
+                      const checked = interestedDepartments.includes(d.name);
+                      return (
+                        <label
+                          key={d.id}
+                          className={`volunteer-dept-pill ${checked ? 'checked' : ''}`}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={checked}
+                            onChange={() => toggleInterestedDepartment(d.name)}
+                          />
+                          {d.name}
+                        </label>
+                      );
+                    })}
+                  </div>
                 </div>
               )}
 

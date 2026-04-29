@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { API_BASE_URL, BACKEND_URL } from "../config";
 import { authFetch } from "../services/auth";
+import CropperModal from "./CropperModal";
 
 const emptyForm = {
     firstName: "",
@@ -20,6 +21,12 @@ export default function TeamMembers() {
     const [form, setForm] = useState(emptyForm);
     const [editingId, setEditingId] = useState(null);
     const [busy, setBusy] = useState(false);
+    // bumped on every successful save / cancel — keying the file input on
+    // it forces React to re-mount the <input>, which is the only reliable
+    // way to clear the displayed filename for an uncontrolled file input.
+    const [formNonce, setFormNonce] = useState(0);
+    // Set when the user picks a file; opens the CropperModal.
+    const [pendingFile, setPendingFile] = useState(null);
 
     useEffect(() => {
         loadMembers();
@@ -52,11 +59,13 @@ export default function TeamMembers() {
             departmentIds: (m.departments || []).map((d) => d.id),
             photo: null,
         });
+        setFormNonce((n) => n + 1);
     };
 
     const cancelEdit = () => {
         setEditingId(null);
         setForm(emptyForm);
+        setFormNonce((n) => n + 1);
     };
 
     const toggleDepartment = (id) => {
@@ -69,6 +78,19 @@ export default function TeamMembers() {
                     : [...prev.departmentIds, id],
             };
         });
+    };
+
+    const handleFilePicked = (file) => {
+        if (file) setPendingFile(file);
+    };
+
+    const handleCropCancel = () => {
+        setPendingFile(null);
+    };
+
+    const handleCropDone = (croppedFile) => {
+        setForm((prev) => ({ ...prev, photo: croppedFile }));
+        setPendingFile(null);
     };
 
     const handleSubmit = async () => {
@@ -85,8 +107,6 @@ export default function TeamMembers() {
             if (form.role) fd.append("role", form.role);
             if (form.bio) fd.append("bio", form.bio);
             if (form.displayOrder !== "") fd.append("displayOrder", form.displayOrder);
-            // Backend always replaces the full set with whatever we send; missing
-            // means "no departments". So we just append every selected id.
             form.departmentIds.forEach((id) => fd.append("departmentIds", String(id)));
             if (form.photo) fd.append("photo", form.photo);
 
@@ -96,12 +116,19 @@ export default function TeamMembers() {
             const method = editingId ? "PUT" : "POST";
 
             const res = await authFetch(url, { method, body: fd });
-            if (!res.ok) throw new Error("Salvare eșuată");
+            if (!res.ok) {
+                let detail = `${res.status} ${res.statusText}`;
+                try {
+                    const text = await res.text();
+                    if (text) detail += `\n\n${text.slice(0, 400)}`;
+                } catch (_) { /* ignore */ }
+                throw new Error(detail);
+            }
             cancelEdit();
             loadMembers();
         } catch (err) {
             console.error(err);
-            alert("Nu s-a putut salva membrul echipei.");
+            alert("Nu s-a putut salva membrul echipei.\n\n" + (err.message || ""));
         } finally {
             setBusy(false);
         }
@@ -199,11 +226,22 @@ export default function TeamMembers() {
                     value={form.displayOrder}
                     onChange={(e) => setForm({ ...form, displayOrder: e.target.value })}
                 />
-                <input
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => setForm({ ...form, photo: e.target.files[0] })}
-                />
+
+                <div>
+                    <input
+                        key={formNonce}
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => handleFilePicked(e.target.files?.[0])}
+                    />
+                    {form.photo && (
+                        <p style={{ fontSize: "13px", color: "#166534", marginTop: "4px" }}>
+                            Imagine pregătită pentru upload ({Math.round(form.photo.size / 1024)} KB).
+                            După salvare se va decupa automat la 1:1.
+                        </p>
+                    )}
+                </div>
+
                 <div style={{ display: "flex", gap: "8px" }}>
                     <button className="button-add" onClick={handleSubmit} disabled={busy}>
                         {editingId ? "Salvează modificările" : "Adaugă membru"}
@@ -267,6 +305,12 @@ export default function TeamMembers() {
                     ))
                 )}
             </div>
+
+            <CropperModal
+                file={pendingFile}
+                onCancel={handleCropCancel}
+                onCropped={handleCropDone}
+            />
         </div>
     );
 }

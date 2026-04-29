@@ -58,7 +58,7 @@ const resources = {
           message: "Mesaj (opțional)",
           messagePlaceholder: "Spune-ne de ce vrei să devii voluntar...",
           submit: "Trimite Cererea",
-          appliedFor: "Aplici pentru:",
+          departmentsLabel: "Departamente de interes (poți alege mai multe):",
           success: "Mulțumim! Cererea ta a fost trimisă cu succes!",
           error: "A apărut o eroare. Te rugăm să încerci din nou."
         }
@@ -176,7 +176,7 @@ const resources = {
           message: "Message (optional)",
           messagePlaceholder: "Tell us why you want to become a volunteer...",
           submit: "Submit Application",
-          appliedFor: "Applying for:",
+          departmentsLabel: "Departments of interest (pick any that apply):",
           success: "Thank you! Your application has been submitted successfully!",
           error: "An error occurred. Please try again."
         }
