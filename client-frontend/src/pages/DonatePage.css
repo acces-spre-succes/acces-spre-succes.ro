@@ -55,6 +55,113 @@
   margin: 0 auto;
 }
 
+/* Coming-soon block (replaces the disabled donation form) */
+.donate-comingsoon {
+  background: linear-gradient(135deg, var(--gray-50), var(--white));
+  padding: 3rem 2.5rem;
+  border-radius: 1.5rem;
+  text-align: center;
+  margin-bottom: 2rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+  border: 2px dashed var(--secondary-light);
+}
+
+.donate-comingsoon-icon {
+  width: 56px;
+  height: 56px;
+  margin: 0 auto 1rem;
+  color: var(--primary);
+}
+
+/* Formular 230 redirect card - the easiest way to support */
+.form230-card {
+  background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+  color: var(--white);
+  padding: 2.5rem;
+  border-radius: 1rem;
+  margin-bottom: 3rem;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(29, 71, 113, 0.25);
+}
+
+.form230-badge {
+  display: inline-block;
+  background: var(--secondary);
+  color: var(--primary-dark);
+  padding: 0.3rem 0.85rem;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 0.8rem;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+}
+
+.form230-title {
+  color: var(--white);
+  font-size: 1.6rem;
+  margin: 0 0 0.5rem 0;
+  font-weight: 700;
+}
+
+.form230-text {
+  color: var(--gray-200);
+  font-size: 1rem;
+  margin: 0 0 1.25rem 0;
+  line-height: 1.6;
+}
+
+.form230-bullets {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1.75rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form230-bullets li {
+  position: relative;
+  padding-left: 1.6rem;
+  color: var(--gray-100);
+  font-size: 0.95rem;
+}
+
+.form230-bullets li::before {
+  content: '✓';
+  position: absolute;
+  left: 0;
+  top: 0;
+  color: var(--secondary);
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.form230-cta {
+  display: inline-flex;
+  align-items: center;
+  background: var(--secondary);
+  color: var(--primary-dark);
+  padding: 0.9rem 1.75rem;
+  border-radius: 0.6rem;
+  font-weight: 700;
+  font-size: 1rem;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.form230-cta:hover {
+  background: var(--secondary-light);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px rgba(235, 189, 58, 0.4);
+}
+
+.iban-value {
+  letter-spacing: 0.5px;
+  word-break: break-all;
+}
+
 .coming-soon-card {
   background: linear-gradient(135deg, var(--gray-50), var(--white));
   padding: 3rem;

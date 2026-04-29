@@ -99,13 +99,26 @@ const resources = {
       donate: {
         title: "Susține Cauza Noastră",
         subtitle: "Donația ta face diferența în viața copiilor",
-        comingSoon: "Sistemul de donații va fi disponibil în curând!",
-        resolved: "Doneaza...te rog",
-        description: "Lucrăm la implementarea unui sistem sigur de donații online. În curând vei putea susține cauza noastră direct de pe site.",
-        alternative: "Alternative de Donație",
+        comingSoonTitle: "Donațiile online vor fi disponibile în curând",
+        comingSoonText: "Lucrăm la integrarea unui sistem sigur de donații prin EuPlătesc. Până atunci, ai mai jos două modalități rapide prin care poți ajuta — fără niciun cost pentru tine în cazul redirecționării de 3,5%.",
+        form230Badge: "Costă 0 lei",
+        form230Title: "Redirecționează 3,5% din impozit",
+        form230Text: "Statul îți permite să direcționezi 3,5% din impozitul pe venit către o organizație non-profit, fără să te coste nimic în plus. Completezi formularul 230 online în 2 minute, iar echipa formular230.ro îl depune la ANAF în locul tău.",
+        form230Bullet1: "Nu costă absolut nimic în plus față de impozitul pe care oricum îl plătești",
+        form230Bullet2: "Durează aproximativ 2 minute, totul online",
+        form230Bullet3: "Te poți angaja pentru 1 sau 2 ani",
+        form230Cta: "Completează formularul 230",
+        alternative: "Transfer Bancar",
         bank: "Transfer Bancar",
         contact: "Pentru informații despre donații, contactează-ne la:",
-        email: "admin@acces-spre-succes.ro"
+        email: "admin@acces-spre-succes.ro",
+        impactTitle: "Impactul Donației Tale",
+        impactEducationTitle: "Educație",
+        impactEducationText: "Susții programe educaționale pentru copii din medii defavorizate.",
+        impactMentoringTitle: "Mentorare",
+        impactMentoringText: "Permiți mentorilor să ghideze copiii către succes.",
+        impactFutureTitle: "Viitor",
+        impactFutureText: "Construiești un viitor mai bun pentru comunitate."
       },
       // Common
       common: {
@@ -217,12 +230,26 @@ const resources = {
       donate: {
         title: "Support Our Cause",
         subtitle: "Your donation makes a difference in children's lives",
-        comingSoon: "The donation system will be available soon!",
-        description: "We're working on implementing a secure online donation system. Soon you'll be able to support our cause directly from the website.",
-        alternative: "Alternative Donation Methods",
+        comingSoonTitle: "Online donations are coming soon",
+        comingSoonText: "We're integrating a secure donation system via EuPlătesc. Until then, you have two quick ways to help below — including one that costs you absolutely nothing.",
+        form230Badge: "Costs 0 RON",
+        form230Title: "Redirect 3.5% of your income tax",
+        form230Text: "Romanian taxpayers can direct 3.5% of their income tax to a non-profit at no extra cost. You fill in form 230 online in about 2 minutes and the formular230.ro team submits it to ANAF on your behalf.",
+        form230Bullet1: "Costs nothing on top of the tax you already pay",
+        form230Bullet2: "Takes around 2 minutes, fully online",
+        form230Bullet3: "You can commit for 1 or 2 years",
+        form230Cta: "Fill in form 230",
+        alternative: "Bank Transfer",
         bank: "Bank Transfer",
         contact: "For information about donations, contact us at:",
-        email: "admin@acces-spre-succes.ro"
+        email: "admin@acces-spre-succes.ro",
+        impactTitle: "The Impact of Your Donation",
+        impactEducationTitle: "Education",
+        impactEducationText: "You support educational programs for children from disadvantaged backgrounds.",
+        impactMentoringTitle: "Mentoring",
+        impactMentoringText: "You enable mentors to guide children towards success.",
+        impactFutureTitle: "Future",
+        impactFutureText: "You help build a better future for the community."
       },
       // Common
       common: {
