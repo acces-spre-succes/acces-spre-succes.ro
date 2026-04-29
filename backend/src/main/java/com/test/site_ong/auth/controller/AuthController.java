@@ -1,8 +1,10 @@
 package com.test.site_ong.auth.controller;
 
+import com.test.site_ong.auth.dto.ChangePasswordRequest;
 import com.test.site_ong.auth.dto.LoginRequest;
 import com.test.site_ong.auth.dto.LoginResponse;
 import com.test.site_ong.auth.dto.MeResponse;
+import com.test.site_ong.auth.model.AdminUser;
 import com.test.site_ong.auth.repo.AdminUserRepository;
 import com.test.site_ong.auth.service.JwtService;
 import jakarta.validation.Valid;
@@ -14,6 +16,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -31,6 +34,7 @@ public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
     private final AdminUserRepository adminUserRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request) {
@@ -63,5 +67,30 @@ public class AuthController {
                 .map(a -> a.getAuthority().replace("ROLE_", ""))
                 .orElse("");
         return ResponseEntity.ok(new MeResponse(user.getUsername(), role));
+    }
+
+    @PostMapping("/change-password")
+    public ResponseEntity<?> changePassword(@Valid @RequestBody ChangePasswordRequest request) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !(auth.getPrincipal() instanceof UserDetails principal)) {
+            return ResponseEntity.status(401).body(Map.of("error", "Not authenticated"));
+        }
+
+        AdminUser user = adminUserRepository.findByUsername(principal.getUsername()).orElse(null);
+        if (user == null) {
+            return ResponseEntity.status(401).body(Map.of("error", "User not found"));
+        }
+
+        if (!passwordEncoder.matches(request.currentPassword(), user.getPasswordHash())) {
+            return ResponseEntity.status(400).body(Map.of("error", "Current password is incorrect"));
+        }
+
+        if (passwordEncoder.matches(request.newPassword(), user.getPasswordHash())) {
+            return ResponseEntity.status(400).body(Map.of("error", "New password must differ from current"));
+        }
+
+        user.setPasswordHash(passwordEncoder.encode(request.newPassword()));
+        adminUserRepository.save(user);
+        return ResponseEntity.ok(Map.of("status", "ok"));
     }
 }

@@ -75,6 +75,9 @@ public class SecurityConfig {
             .cors(c -> c.configurationSource(corsConfigurationSource()))
             .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
+                // Change-password requires an authenticated admin
+                .requestMatchers(HttpMethod.POST, "/api/auth/change-password").hasRole("ADMIN")
+
                 // Login + token check are always reachable
                 .requestMatchers("/api/auth/**").permitAll()
 

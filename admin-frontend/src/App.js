@@ -5,6 +5,7 @@ import Articles from "./components/Articles";
 import Volunteers from "./components/Volunteers";
 import TeamMembers from "./components/TeamMembers";
 import Donators from "./components/Donators";
+import Settings from "./components/Settings";
 import "./styles/style.css";
 import UpcomingProjects from "./components/UpcomingProjects";
 import CompletedProjects from "./components/CompletedProjects";
@@ -62,6 +63,7 @@ export default function App() {
                     {activeSection === "upcomingProjects" && <UpcomingProjects />}
                     {activeSection === "completedProjects" && <CompletedProjects />}
                     {activeSection === "donators" && <Donators />}
+                    {activeSection === "settings" && <Settings />}
                 </main>
             </div>
         </div>

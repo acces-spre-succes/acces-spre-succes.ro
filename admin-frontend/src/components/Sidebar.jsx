@@ -7,6 +7,7 @@ const ITEMS = [
     { id: "upcomingProjects", label: "Proiecte viitoare" },
     { id: "completedProjects", label: "Proiecte finalizate" },
     { id: "donators", label: "Donatori" },
+    { id: "settings", label: "Setări" },
 ];
 
 export default function Sidebar({ active, onSelect }) {

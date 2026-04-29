@@ -61,6 +61,23 @@ export async function verifyToken() {
   }
 }
 
+export async function changePassword(currentPassword, newPassword) {
+  const res = await authFetch(`${API_BASE_URL}/auth/change-password`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ currentPassword, newPassword }),
+  });
+  if (!res.ok) {
+    let message = `Password change failed (${res.status})`;
+    try {
+      const body = await res.json();
+      if (body && body.error) message = body.error;
+    } catch (_) { /* keep default */ }
+    throw new Error(message);
+  }
+  return res.json();
+}
+
 /**
  * fetch() wrapper that auto-attaches the JWT and clears local auth on 401.
  * Use this for any call to the backend from authenticated admin pages.
