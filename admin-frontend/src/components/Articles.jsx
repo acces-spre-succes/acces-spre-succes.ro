@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { API_BASE_URL } from '../config';
+import { authFetch } from '../services/auth';
 
 const BACKEND_URL = process.env.NODE_ENV === 'production' ? '' : 'http://localhost:8080';
 
@@ -7,15 +8,13 @@ export default function Articles() {
     const [articles, setArticles] = useState([]);
     const [newArticle, setNewArticle] = useState({ title: "", description: "", image: null });
 
-    // Ia articolele din backend la mount
     useEffect(() => {
-        fetch(`${API_BASE_URL}/articles`)
+        authFetch(`${API_BASE_URL}/articles`)
             .then(res => res.json())
             .then(data => setArticles(data))
             .catch(err => console.error(err));
     }, []);
 
-    // Adauga articol
     const handleAddArticle = async () => {
         if (!newArticle.title || !newArticle.description) {
             alert("Completeaza toate campurile!");
@@ -28,7 +27,7 @@ export default function Articles() {
         if (newArticle.image) formData.append("image", newArticle.image);
 
         try {
-            const res = await fetch(`${API_BASE_URL}/articles`, {
+            const res = await authFetch(`${API_BASE_URL}/articles`, {
                 method: "POST",
                 body: formData
             });
@@ -44,10 +43,9 @@ export default function Articles() {
         }
     };
 
-    // Sterge articol
     const handleDeleteArticle = async (id) => {
         try {
-            const res = await fetch(`${API_BASE_URL}/articles/${id}`, {
+            const res = await authFetch(`${API_BASE_URL}/articles/${id}`, {
                 method: "DELETE"
             });
 

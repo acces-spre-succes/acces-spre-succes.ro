@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { API_BASE_URL } from '../config';
+import { authFetch } from '../services/auth';
 
 const BACKEND_URL = process.env.NODE_ENV === 'production' ? '' : 'http://localhost:8080';
 
@@ -8,7 +9,7 @@ export default function CompletedProjects() {
     const [newProject, setNewProject] = useState({ title: "", description: "", image: null });
 
     useEffect(() => {
-        fetch(`${API_BASE_URL}/completed-projects`)
+        authFetch(`${API_BASE_URL}/completed-projects`)
             .then(res => res.json())
             .then(data => setProjects(data))
             .catch(err => console.error("Eroare la preluare proiecte:", err));
@@ -25,7 +26,7 @@ export default function CompletedProjects() {
         formData.append("description", newProject.description);
         if (newProject.image) formData.append("image", newProject.image);
 
-        const res = await fetch(`${API_BASE_URL}/completed-projects`, {
+        const res = await authFetch(`${API_BASE_URL}/completed-projects`, {
             method: "POST",
             body: formData,
         });
@@ -38,7 +39,7 @@ export default function CompletedProjects() {
     };
 
     const handleDeleteProject = async (id) => {
-        await fetch(`${API_BASE_URL}/completed-projects/${id}`, { method: "DELETE" });
+        await authFetch(`${API_BASE_URL}/completed-projects/${id}`, { method: "DELETE" });
         setProjects(projects.filter(p => p.id !== id));
     };
 

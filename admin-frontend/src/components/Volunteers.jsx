@@ -1,21 +1,20 @@
 import React, { useEffect, useState } from "react";
 import { API_BASE_URL } from '../config';
+import { authFetch } from '../services/auth';
 
 export default function Volunteers() {
     const [volunteers, setVolunteers] = useState([]);
 
-    //Obtine lista de voluntari din backend
     useEffect(() => {
-        fetch(`${API_BASE_URL}/volunteers`)
+        authFetch(`${API_BASE_URL}/volunteers`)
             .then(res => res.json())
             .then(data => setVolunteers(data))
             .catch(err => console.error("Eroare la preluare voluntari:", err));
     }, []);
 
-    //Stergere voluntar
     const handleDeleteVolunteer = async (id) => {
         if (window.confirm("Esti sigur ca vrei sa stergi acest voluntar?")) {
-            await fetch(`${API_BASE_URL}/volunteers/${id}`, {
+            await authFetch(`${API_BASE_URL}/volunteers/${id}`, {
                 method: "DELETE",
             });
             setVolunteers(volunteers.filter(v => v.id !== id));

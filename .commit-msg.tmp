@@ -1,0 +1,39 @@
+Add JWT auth for the admin panel
+
+Replace the client-side `admin / admin123` mock with real authentication
+backed by Spring Security + JWT.
+
+Backend:
+- New `auth/` package: `AdminUser` JPA entity, repository,
+  `AdminUserDetailsService`, `JwtService`, `JwtAuthFilter`, `AuthController`
+  (`POST /api/auth/login`, `GET /api/auth/me`), and a `SecurityConfig`
+  that wires it all together. Stateless, BCrypt password hashes, HS512
+  signed tokens.
+- `SecurityConfig` allows public reads on `/api/articles`,
+  `/api/upcoming-projects`, `/api/completed-projects`, `/api/comments/**`,
+  the public form submissions (`POST /api/volunteers`, donation flow),
+  Stripe callbacks, `/uploads/**`, and `/api/auth/**`. Anything else
+  under `/api/**` requires `ROLE_ADMIN`.
+- CORS moves out of `WebConfig` and into a configurable
+  `CorsConfigurationSource` driven by `CORS_ALLOWED_ORIGINS`. Production
+  deploys add the Netlify hostnames here.
+- `AdminBootstrap` `ApplicationRunner` seeds one admin user from
+  `ADMIN_BOOTSTRAP_USERNAME` / `ADMIN_BOOTSTRAP_PASSWORD` if (and only
+  if) the `admin_users` table is empty. Once one exists, those env vars
+  are ignored.
+- `application.properties`, `.env`, `.env.example` and `docker-compose.yml`
+  gain `JWT_SECRET`, `JWT_EXPIRATION_MS`, `CORS_ALLOWED_ORIGINS` and the
+  bootstrap admin variables.
+
+Frontend (admin):
+- New `services/auth.js` with `login` / `logout` / `verifyToken` and an
+  `authFetch` wrapper that auto-attaches the bearer token and clears
+  local state on 401.
+- `Login.jsx` calls `POST /api/auth/login` and surfaces server errors.
+- `App.js` checks the stored token on mount, shows a "checking session"
+  state while it verifies, and persists login across page reloads.
+- `Articles`, `Volunteers`, `UpcomingProjects`, `CompletedProjects`, and
+  `services/api.js` swap bare `fetch` for `authFetch`.
+
+The default dev credentials are `admin / changeme` (set in `.env`).
+Rotate before going public.

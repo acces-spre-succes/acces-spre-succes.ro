@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { API_BASE_URL } from '../config';
+import { authFetch } from '../services/auth';
 
 const BACKEND_URL = process.env.NODE_ENV === 'production' ? '' : 'http://localhost:8080';
 
@@ -7,15 +8,13 @@ export default function UpcomingProjects() {
     const [projects, setProjects] = useState([]);
     const [newProject, setNewProject] = useState({ title: "", description: "", image: null });
 
-    // 🔹 Preluam proiectele
     useEffect(() => {
-        fetch(`${API_BASE_URL}/upcoming-projects`)
+        authFetch(`${API_BASE_URL}/upcoming-projects`)
             .then(res => res.json())
             .then(data => setProjects(data))
             .catch(err => console.error("Eroare la preluare proiecte:", err));
     }, []);
 
-    // 🔹 Adaugam proiect nou
     const handleAddProject = async () => {
         if (!newProject.title || !newProject.description) {
             alert("Completeaza toate campurile!");
@@ -27,7 +26,7 @@ export default function UpcomingProjects() {
         formData.append("description", newProject.description);
         if (newProject.image) formData.append("image", newProject.image);
 
-        const res = await fetch(`${API_BASE_URL}/upcoming-projects`, {
+        const res = await authFetch(`${API_BASE_URL}/upcoming-projects`, {
             method: "POST",
             body: formData,
         });
@@ -39,9 +38,8 @@ export default function UpcomingProjects() {
         }
     };
 
-    // 🔹 Stergem proiect
     const handleDeleteProject = async (id) => {
-        await fetch(`${API_BASE_URL}/upcoming-projects/${id}`, { method: "DELETE" });
+        await authFetch(`${API_BASE_URL}/upcoming-projects/${id}`, { method: "DELETE" });
         setProjects(projects.filter(p => p.id !== id));
     };
 
