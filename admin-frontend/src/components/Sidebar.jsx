@@ -1,32 +1,26 @@
 import React from "react";
 
+const ITEMS = [
+    { id: "articles", label: "Articole" },
+    { id: "team", label: "Echipă" },
+    { id: "volunteers", label: "Cereri voluntariat" },
+    { id: "upcomingProjects", label: "Proiecte viitoare" },
+    { id: "completedProjects", label: "Proiecte finalizate" },
+    { id: "donators", label: "Donatori" },
+];
+
 export default function Sidebar({ active, onSelect }) {
     return (
         <div className="sidebar">
-            <div
-                className={`sidebar-item ${active === "articles" ? "active" : ""}`}
-                onClick={() => onSelect("articles")}
-            >
-                Articole
-            </div>
-            <div
-                className={`sidebar-item ${active === "volunteers" ? "active" : ""}`}
-                onClick={() => onSelect("volunteers")}
-            >
-                Voluntari
-            </div>
-            <div
-                className={`sidebar-item ${active === "upcomingProjects" ? "active" : ""}`}
-                onClick={() => onSelect("upcomingProjects")}
-            >
-                Proiecte viitoare
-            </div>
-            <div
-                className={`sidebar-item ${active === "completedProjects" ? "active" : ""}`}
-                onClick={() => onSelect("completedProjects")}
-            >
-                Proiecte finalizate
-            </div>
+            {ITEMS.map((item) => (
+                <div
+                    key={item.id}
+                    className={`sidebar-item ${active === item.id ? "active" : ""}`}
+                    onClick={() => onSelect(item.id)}
+                >
+                    {item.label}
+                </div>
+            ))}
         </div>
     );
 }

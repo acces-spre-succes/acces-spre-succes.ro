@@ -10,6 +10,7 @@ import CompletedProjectsPage from './pages/CompletedProjectsPage';
 import ProjectDetailPage from './pages/ProjectDetailPage';
 import AchievementsPage from './pages/AchievementsPage';
 import DonatePage from './pages/DonatePage';
+import TeamPage from './pages/TeamPage';
 import './styles/GlobalStyles.css';
 import './i18n';
 import CheckoutPage from "./pages/CheckoutPage";
@@ -30,6 +31,8 @@ function App() {
             <Route path="/completed-projects" element={<CompletedProjectsPage />} />
             <Route path="/completed-projects/:id" element={<ProjectDetailPage />} />
             <Route path="/achievements" element={<AchievementsPage />} />
+            <Route path="/echipa" element={<TeamPage />} />
+            <Route path="/team" element={<TeamPage />} />
             <Route path="/donate" element={<DonatePage />} />
             <Route path="/checkout" element={<CheckoutPage />} />
             <Route path="/return" element={<ReturnPage />} />

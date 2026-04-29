@@ -3,6 +3,8 @@ import Login from "./components/Login";
 import Sidebar from "./components/Sidebar";
 import Articles from "./components/Articles";
 import Volunteers from "./components/Volunteers";
+import TeamMembers from "./components/TeamMembers";
+import Donators from "./components/Donators";
 import "./styles/style.css";
 import UpcomingProjects from "./components/UpcomingProjects";
 import CompletedProjects from "./components/CompletedProjects";
@@ -55,9 +57,11 @@ export default function App() {
                 <Sidebar active={activeSection} onSelect={setActiveSection} />
                 <main className="main-content">
                     {activeSection === "articles" && <Articles />}
+                    {activeSection === "team" && <TeamMembers />}
                     {activeSection === "volunteers" && <Volunteers />}
                     {activeSection === "upcomingProjects" && <UpcomingProjects />}
                     {activeSection === "completedProjects" && <CompletedProjects />}
+                    {activeSection === "donators" && <Donators />}
                 </main>
             </div>
         </div>

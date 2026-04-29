@@ -1,0 +1,99 @@
+.team-page {
+  min-height: 100vh;
+}
+
+.team-section {
+  padding: 4rem 0;
+}
+
+.team-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 2rem;
+}
+
+.team-card {
+  background: var(--white);
+  border-radius: 1rem;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: box-shadow 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+}
+
+.team-card:hover {
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.15);
+}
+
+.team-photo-wrapper {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  background-color: var(--gray-100);
+}
+
+.team-photo-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.team-content {
+  padding: 1.5rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex: 1;
+}
+
+.team-name {
+  font-size: 1.25rem;
+  margin: 0;
+  color: var(--primary);
+}
+
+.team-role {
+  margin: 0;
+  font-weight: 600;
+  color: var(--secondary-dark);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-size: 0.85rem;
+}
+
+.team-bio {
+  margin: 0.25rem 0 0.75rem 0;
+  color: var(--gray-600);
+  font-size: 0.95rem;
+}
+
+.team-email {
+  margin-top: auto;
+  color: var(--primary);
+  text-decoration: none;
+  font-weight: 500;
+  word-break: break-all;
+  border-top: 1px solid var(--gray-100);
+  padding-top: 0.75rem;
+}
+
+.team-email:hover {
+  text-decoration: underline;
+  color: var(--primary-dark);
+}
+
+.no-team {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--gray-500);
+  font-size: 1.1rem;
+}
+
+@media (max-width: 480px) {
+  .team-grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -9,6 +9,7 @@ const resources = {
         home: "Acasă",
         about: "Despre Noi",
         articles: "Articole",
+        team: "Echipa",
         projects: "Proiecte",
         upcomingProjects: "Proiecte Viitoare",
         completedProjects: "Proiecte Finalizate",
@@ -59,6 +60,12 @@ const resources = {
         subtitle: "Ultimele știri și povești de la Acces spre Succes",
         readMore: "Citește Mai Mult",
         noArticles: "Nu există articole momentan."
+      },
+      // Team Page
+      team: {
+        title: "Echipa Noastră",
+        subtitle: "Oamenii din spatele Acces spre Succes",
+        empty: "Echipa va fi anunțată în curând."
       },
       // Projects Pages
       projects: {
@@ -111,6 +118,7 @@ const resources = {
         home: "Home",
         about: "About Us",
         articles: "Articles",
+        team: "Team",
         projects: "Projects",
         upcomingProjects: "Upcoming Projects",
         completedProjects: "Completed Projects",
@@ -161,6 +169,12 @@ const resources = {
         subtitle: "Latest news and stories from Access to Success",
         readMore: "Read More",
         noArticles: "No articles available at the moment."
+      },
+      // Team Page
+      team: {
+        title: "Our Team",
+        subtitle: "The people behind Access to Success",
+        empty: "Our team will be announced soon."
       },
       // Projects Pages
       projects: {
