@@ -1,264 +1,377 @@
+/* ============================================================
+   Acces spre Succes - admin panel styles
+   ============================================================ */
+
+:root {
+    --color-bg: #f4f6f9;
+    --color-surface: #ffffff;
+    --color-border: #e2e8f0;
+    --color-text: #1a202c;
+    --color-text-muted: #4a5568;
+    --color-text-faint: #718096;
+    --color-primary: #4c51bf;
+    --color-primary-hover: #434190;
+    --color-accent: #5a67d8;
+    --color-success: #38a169;
+    --color-success-hover: #2f855a;
+    --color-danger: #e53e3e;
+    --color-danger-hover: #c53030;
+    --color-sidebar: #2d3748;
+    --color-sidebar-active: #4a5568;
+    --color-sidebar-hover: #4a5590;
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+    --radius: 10px;
+    --radius-sm: 6px;
+}
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: var(--color-bg);
+    color: var(--color-text);
     min-height: 100vh;
     margin: 0;
+    line-height: 1.5;
 }
 
-/* Login */
+/* ----- Login ----- */
 .login-container {
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 
 .login-box {
-    background: white;
+    background: var(--color-surface);
     padding: 40px;
     border-radius: 15px;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
     width: 100%;
-    max-width: 400px;
+    max-width: 420px;
 }
 
+.login-box h1,
+.login-box h2 {
+    margin-top: 0;
+    color: var(--color-text);
+}
+
+/* ----- Form controls ----- */
 .form-group {
     margin-bottom: 15px;
 }
 
-input, textarea {
+input,
+textarea,
+select {
     width: 100%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
+    padding: 10px 12px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    font: inherit;
+    color: var(--color-text);
+    background: var(--color-surface);
+    box-sizing: border-box;
 }
 
-.btn, .btn-primary {
-    background-color: #61dafb;
-    color: white;
+input:focus,
+textarea:focus,
+select:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(76, 81, 191, 0.18);
+}
+
+textarea {
+    min-height: 90px;
+    resize: vertical;
+}
+
+/* ----- Buttons (generic) ----- */
+.btn,
+.btn-primary {
+    background-color: var(--color-primary);
+    color: #fff;
     border: none;
     padding: 10px 20px;
-    border-radius: 8px;
+    border-radius: var(--radius-sm);
     cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.15s ease;
 }
 
-.btn:hover, .btn-primary:hover {
-    background-color: #5a67d8;
+.btn:hover,
+.btn-primary:hover {
+    background-color: var(--color-primary-hover);
 }
 
-/* Admin panel */
+.btn:disabled,
+.btn-primary:disabled,
+.button-add:disabled,
+.button-delete:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+/* ----- Top-level admin layout ----- */
 .admin-container {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
-    background: #f4f6f9;
+    background: var(--color-bg);
 }
 
 .admin-header {
     display: flex;
     justify-content: space-between;
-    background: #4c51bf;
-    color: white;
-    padding: 15px 30px;
+    align-items: center;
+    background: var(--color-primary);
+    color: #fff;
+    padding: 16px 32px;
+    box-shadow: var(--shadow-sm);
 }
 
-.sidebar {
-    width: 200px;
-    background: #2d3748;
-    color: white;
-    padding: 10px;
+.admin-header h1 {
+    font-size: 1.25rem;
+    margin: 0;
+    font-weight: 600;
+    letter-spacing: 0.2px;
 }
 
-.sidebar-item {
-    padding: 10px;
+.admin-header__right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.admin-header__user {
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 0.9rem;
+}
+
+.logout-btn {
+    background: rgba(255, 255, 255, 0.12);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    padding: 6px 14px;
+    border-radius: var(--radius-sm);
     cursor: pointer;
-    border-radius: 5px;
+    font-size: 0.9rem;
+    transition: background-color 0.15s ease;
 }
 
-.sidebar-item.active{
-    background: #4a5568;
-}
-
-.sidebar-item:hover {
-    background: #4a5590;
+.logout-btn:hover {
+    background: rgba(255, 255, 255, 0.22);
 }
 
 .admin-content {
     display: flex;
-}
-
-.main-content {
     flex: 1;
-    padding: 20px;
+    min-height: 0;
 }
 
-.content-section {
-    display: none;
-}
-
-.content-section.active {
-    display: block;
-}
-
-.success-message {
-    color: green;
-    display: none;
-    margin-bottom: 10px;
-}
-
-
-.project-form input, .project-form textarea {
-    display: block;
-    margin-bottom: 10px;
-    padding: 8px;
-    width: 300px;
-}
-
-.project-form button {
-    padding: 8px 12px;
-    background-color: #667eea;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-.projects-list {
-    margin-top: 20px;
-}
-
-.project-card {
-    border: 1px solid #ccc;
-    padding: 10px;
-    margin-bottom: 10px;
-    border-radius: 8px;
-}
-/* Container general */
-.content-section {
-    padding: 20px;
-    background: #f9f9f9;
-    border-radius: 10px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    margin: 20px auto;
-    max-width: 800px;
-}
-
-/* Titlu secțiune */
-.content-section h2 {
-    margin-bottom: 20px;
-    color: #333;
-    font-family: 'Arial', sans-serif;
-}
-
-/* Form pentru adaugare articol */
-.article-form {
+/* ----- Sidebar ----- */
+.sidebar {
+    width: 220px;
+    background: var(--color-sidebar);
+    color: #fff;
+    padding: 16px 12px;
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    margin-bottom: 30px;
+    gap: 4px;
+    flex-shrink: 0;
+}
+
+.sidebar-item {
+    padding: 10px 14px;
+    cursor: pointer;
+    border-radius: var(--radius-sm);
+    font-size: 0.95rem;
+    transition: background-color 0.12s ease;
+    user-select: none;
+}
+
+.sidebar-item:hover {
+    background: var(--color-sidebar-hover);
+}
+
+.sidebar-item.active {
+    background: var(--color-sidebar-active);
+    font-weight: 600;
+}
+
+/* ----- Main content area ----- */
+.main-content {
+    flex: 1;
+    padding: 24px 32px;
+    overflow-x: auto;
+}
+
+.content-section {
+    background: var(--color-surface);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+    padding: 24px;
+    margin: 0 auto 24px auto;
+    max-width: 960px;
+}
+
+.content-section h2 {
+    margin: 0 0 18px 0;
+    color: var(--color-text);
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+/* ----- Tables ----- */
+.content-section table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 8px;
+}
+
+.content-section th,
+.content-section td {
+    padding: 10px 12px;
+    text-align: left;
+    border-bottom: 1px solid var(--color-border);
+    font-size: 0.93rem;
+    vertical-align: top;
+}
+
+.content-section th {
+    background: #f7fafc;
+    color: var(--color-text-muted);
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.5px;
+}
+
+.content-section tr:hover td {
+    background: #f9fafb;
+}
+
+/* ----- Forms (article / project / generic create form) ----- */
+.article-form,
+.project-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 24px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--color-border);
 }
 
 .article-form input[type="text"],
-.article-form textarea {
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    font-size: 14px;
+.article-form input[type="email"],
+.article-form input[type="number"],
+.article-form textarea,
+.project-form input,
+.project-form textarea {
     width: 100%;
     box-sizing: border-box;
-    resize: vertical;
 }
 
-.article-form button {
-    padding: 10px 20px;
-    background-color: #007bff;
-    color: white;
-    font-weight: bold;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-.article-form button:hover {
-    background-color: #0056b3;
-}
-
-/* Lista articole */
-.articles-list {
+/* ----- Card list (articles, projects, team) ----- */
+.articles-list,
+.projects-list {
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 14px;
 }
 
-/* Card articol */
-.article-card {
-    background: white;
-    padding: 15px;
-    border-radius: 10px;
-    box-shadow: 0 1px 6px rgba(0,0,0,0.1);
+.article-card,
+.project-card {
+    background: #fdfdfe;
+    border: 1px solid var(--color-border);
+    padding: 18px;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
     display: flex;
     flex-direction: column;
     gap: 10px;
 }
 
-/* Titlu articol in card */
-.article-card h3 {
+.article-card h3,
+.project-card h3 {
     margin: 0;
-    color: #333;
+    color: var(--color-text);
+    font-size: 1.05rem;
 }
 
-/* Descriere articol */
-.article-card p {
+.article-card p,
+.project-card p {
     margin: 0;
-    color: #555;
+    color: var(--color-text-muted);
 }
 
-/* Buton ștergere */
+/* ----- Action buttons ----- */
+.button-add,
+.article-form .button-add,
+.project-form .button-add-project {
+    align-self: flex-start;
+    padding: 8px 16px;
+    background-color: var(--color-success);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: background-color 0.15s ease;
+}
+
+.button-add:hover,
+.article-form .button-add:hover,
+.project-form .button-add-project:hover {
+    background-color: var(--color-success-hover);
+}
+
 .button-delete {
     align-self: flex-start;
-    padding: 6px 12px;
-    background-color: #dc3545;
-    color: white;
+    padding: 8px 16px;
+    background-color: var(--color-danger);
+    color: #fff;
     border: none;
-    border-radius: 6px;
+    border-radius: var(--radius-sm);
     cursor: pointer;
-    font-size: 14px;
-    transition: background-color 0.3s ease;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: background-color 0.15s ease;
 }
 
 .button-delete:hover {
-    background-color: #a71d2a;
-}
-.article-form .button-add {
-    align-self: flex-start;
-    padding: 6px 12px;
-    background-color: darkseagreen;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 14px;
-    transition: background-color 0.3s ease;
+    background-color: var(--color-danger-hover);
 }
 
-.article-form .button-add:hover {
-    background-color: darkslategray;
+/* ----- Misc ----- */
+.success-message {
+    color: var(--color-success);
+    margin-bottom: 10px;
 }
 
-.project-form .button-add-project {
-    align-self: flex-start;
-    padding: 6px 12px;
-    background-color: darkseagreen;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 14px;
-    transition: background-color 0.3s ease;
-}
+/* Small screens */
+@media (max-width: 720px) {
+    .admin-content {
+        flex-direction: column;
+    }
 
-.project-form .button-add-project:hover {
-    background-color: darkslategray;
+    .sidebar {
+        width: 100%;
+        flex-direction: row;
+        overflow-x: auto;
+        padding: 8px;
+        gap: 8px;
+    }
+
+    .sidebar-item {
+        white-space: nowrap;
+    }
+
+    .main-content {
+        padding: 16px;
+    }
 }
