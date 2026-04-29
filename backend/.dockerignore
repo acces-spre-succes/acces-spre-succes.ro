@@ -1,0 +1,27 @@
+target/
+.mvn/wrapper/maven-wrapper.jar
+
+# IDE files
+.idea/
+.vscode/
+*.iml
+*.iws
+*.ipr
+
+# OS / misc
+.DS_Store
+Thumbs.db
+*.swp
+
+# Don't ship local data into the image
+uploads/
+logs/
+*.log
+
+# Don't bake secrets into the image
+.env
+.env.*
+!.env.example
+
+# Generated docs
+HELP.md

@@ -1,0 +1,70 @@
+---
+description: Acces spre Succes ONG — stack, conventions, and deploy targets
+alwaysApply: true
+---
+
+# Acces spre Succes — Project Context
+
+Website for Asociația "Acces spre Succes" (NGO from Bistrița, Romania).
+Three independently deployable services in one git repo:
+
+- `backend/` — Spring Boot REST API
+- `client-frontend/` — public site
+- `admin-frontend/` — admin panel
+
+Local dev runs everything via `docker-compose.yml` at the repo root.
+
+## Stack
+
+### Backend (`backend/`)
+- Java 21, Spring Boot 4.0.0-M3 (milestone), Maven
+- Spring Web + Spring Data JPA + Hibernate (`ddl-auto=update`)
+- Spring Security 7 + JJWT 0.12.6 for JWT auth (HS256, 24h)
+- BCrypt for password hashes
+- PostgreSQL via JDBC (`postgresql` driver)
+- Uploads stored on local FS at `${file.upload-dir:uploads}` — needs a persistent volume in production
+- `stripe-java` is being phased out for EuPlătesc
+
+### Database
+- Neon Postgres (cloud) — connection string via `DB_URL` / `DB_USER` / `DB_PASSWORD`
+- Plain PostgreSQL, swappable with Supabase or any Postgres just by changing the env vars
+
+### Frontends — both share the same shape
+- React 19 + Vite 5, vanilla JS/JSX (no TypeScript)
+- Build output goes to `build/` (legacy CRA convention, not Vite's default `dist/`)
+- API URL comes from `src/config.js`, which reads `VITE_API_BASE_URL` at build time
+- Vite dev server → `http://localhost:8080`
+- Vercel build → `https://api.acces-spre-succes.ro`
+- Docker / nginx → relative `/api` (proxied by frontend container)
+- `client-frontend/`: axios, framer-motion, react-i18next, react-router-dom 7, @stripe/stripe-js
+- `admin-frontend/`: lean — only react/react-dom; uses `fetch` via `authFetch`
+
+## Auth
+
+- JWT in `Authorization: Bearer ...`, persisted in `localStorage`
+- Initial admin seeded on first boot from `ADMIN_BOOTSTRAP_USERNAME` / `ADMIN_BOOTSTRAP_PASSWORD`
+- `admin-frontend/src/services/auth.js` exports `authFetch` — every admin API call must go through it so the token is auto-attached
+- `backend/src/main/java/com/test/site_ong/auth/` holds all the security wiring
+
+## Deployment
+
+- Public site → **Vercel**, Root Directory `client-frontend`, domain `acces-spre-succes.ro`
+- Admin panel → **Vercel**, Root Directory `admin-frontend`, domain `admin.acces-spre-succes.ro`
+- Backend → **Fly.io**, region `fra` (Frankfurt), domain `api.acces-spre-succes.ro`
+- DNS → **Cloudflare**, all records DNS-only (gray cloud); Vercel and Fly.io handle their own TLS
+- Each Vercel project must set `VITE_API_BASE_URL=https://api.acces-spre-succes.ro`
+
+## Conventions
+
+- Secrets live in `.env` (gitignored); `.env.example` is the committed template
+- Never hardcode URLs or DB creds — read from `config.js` (frontends) or `application.properties` placeholders (backend)
+- Prefer Vite/Spring built-in env-var resolution over runtime config files
+- Spring Security rules live in `backend/src/main/java/com/test/site_ong/auth/config/SecurityConfig.java`
+- Frontends were migrated CRA → Vite; do not reintroduce `react-scripts`
+- Lockfiles (`package-lock.json`) are committed — keep them in sync with `package.json`
+
+## Common gotchas
+
+- Vercel needs the **Root Directory** saved separately from the Build Settings panel
+- Fly.io machine filesystems are ephemeral — uploaded images need a mounted volume (`/app/uploads`)
+- Spring Boot `ddl-auto=update` means schema changes from entity edits land automatically; treat entity changes as migrations

@@ -1,0 +1,55 @@
+# Fly.io config for the Acces spre Succes backend (Spring Boot).
+#
+# First-time setup (from this directory):
+#   fly auth login
+#   fly apps create acces-spre-succes-api          # use a unique name; if taken, change `app` below to match
+#   fly volumes create ong_uploads --region fra --size 1
+#   fly secrets set DB_URL='...' DB_USER='...' DB_PASSWORD='...' \
+#                   JWT_SECRET='...' \
+#                   ADMIN_BOOTSTRAP_USERNAME='admin' \
+#                   ADMIN_BOOTSTRAP_PASSWORD='change-me-then-rotate' \
+#                   CORS_ALLOWED_ORIGINS='https://acces-spre-succes.ro,https://admin.acces-spre-succes.ro' \
+#                   STRIPE_SECRET_KEY=''
+#   fly deploy
+#
+# Custom domain (after the first deploy is healthy):
+#   fly certs add api.acces-spre-succes.ro
+#   # then in Cloudflare add a CNAME `api` -> <app-name>.fly.dev (DNS only, gray cloud)
+
+app = "acces-spre-succes-api"
+primary_region = "fra"
+
+[build]
+  # Dockerfile in this directory is auto-detected; nothing to configure.
+
+[env]
+  SERVER_PORT = "8080"
+  # Cap JVM heap so the container has headroom for the JIT, threads, and Linux page cache.
+  JAVA_TOOL_OPTIONS = "-XX:MaxRAMPercentage=75 -XX:+UseSerialGC -Djava.security.egd=file:/dev/./urandom"
+  UPLOAD_DIR = "/app/uploads"
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  # Sleep the machine when idle and wake it on the first request. Cold start
+  # for Spring Boot here is ~5-10s; fine for low-traffic admin sites and
+  # keeps the bill at near-zero. Flip to `false` if cold starts are unacceptable.
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ["app"]
+
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "512mb"
+
+# Persistent volume for uploaded images. Without this, every deploy wipes
+# everything written to /app/uploads. Volume `ong_uploads` must exist
+# (created via `fly volumes create` above) before the first deploy.
+[[mounts]]
+  source = "ong_uploads"
+  destination = "/app/uploads"
+
+# Default TCP healthcheck on the http_service is enough; no actuator endpoint
+# is configured. Add a `[[http_service.checks]]` block here later if we
+# introduce spring-boot-starter-actuator and want HTTP /actuator/health checks.
