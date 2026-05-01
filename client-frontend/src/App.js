@@ -11,6 +11,7 @@ import ProjectDetailPage from './pages/ProjectDetailPage';
 import AchievementsPage from './pages/AchievementsPage';
 import DonatePage from './pages/DonatePage';
 import TeamPage from './pages/TeamPage';
+import DepartmentsPage from './pages/DepartmentsPage';
 import './styles/GlobalStyles.css';
 import './i18n';
 import CheckoutPage from "./pages/CheckoutPage";
@@ -33,6 +34,7 @@ function App() {
             <Route path="/achievements" element={<AchievementsPage />} />
             <Route path="/echipa" element={<TeamPage />} />
             <Route path="/team" element={<TeamPage />} />
+            <Route path="/departamente" element={<DepartmentsPage />} />
             <Route path="/donate" element={<DonatePage />} />
             <Route path="/checkout" element={<CheckoutPage />} />
             <Route path="/return" element={<ReturnPage />} />

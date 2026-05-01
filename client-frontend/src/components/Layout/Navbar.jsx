@@ -59,6 +59,13 @@ const Navbar = () => {
           >
             {t('nav.team')}
           </Link>
+          <Link
+            to="/departamente"
+            className={`nav-link ${isActive('/departamente')}`}
+            onClick={closeMenu}
+          >
+            {t('nav.departments')}
+          </Link>
           <div className="nav-dropdown">
             <span className="nav-link">{t('nav.projects')}</span>
             <div className="dropdown-content">

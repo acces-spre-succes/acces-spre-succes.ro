@@ -133,6 +133,17 @@ const Footer = () => {
           <p className="copyright">
             &copy; {currentYear} Acces spre Succes. All rights reserved.
           </p>
+          <p className="copyright made-by">
+            Made by{' '}
+            <a
+              href="https://akashicdreams.dev/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="made-by-link"
+            >
+              akashic dreams
+            </a>
+          </p>
         </div>
       </div>
     </footer>

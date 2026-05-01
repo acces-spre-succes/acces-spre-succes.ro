@@ -158,18 +158,24 @@
   margin-bottom: 3rem;
 }
 
+.vol-carousel-viewport {
+  overflow: hidden;
+}
+
 .board-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 2rem;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  gap: 1.5rem;
 }
 
 .board-card {
+  flex: 0 0 250px;
   background: var(--white);
   border-radius: 1rem;
   overflow: hidden;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  transition: all 0.3s ease;
+  transition: box-shadow 0.3s ease;
   cursor: pointer;
 }
 
@@ -308,10 +314,15 @@
   padding: 0;
 }
 
-.carousel-arrow:hover {
+.carousel-arrow:hover:not(:disabled) {
   background: var(--primary);
   color: var(--white);
   border-color: var(--primary);
+}
+
+.carousel-arrow:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
 }
 
 .department-panel {
@@ -603,6 +614,10 @@
   .form-row {
     grid-template-columns: 1fr;
   }
+
+  .board-card {
+    flex: 0 0 100%;
+  }
 }
 
 @media (max-width: 480px) {
@@ -620,9 +635,5 @@
 
   .volunteer-form {
     padding: 1.5rem 1rem;
-  }
-
-  .board-grid {
-    grid-template-columns: 1fr;
   }
 }

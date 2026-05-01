@@ -10,6 +10,7 @@ const resources = {
         about: "Despre Noi",
         articles: "Articole",
         team: "Echipa",
+        departments: "Departamente",
         projects: "Proiecte",
         upcomingProjects: "Proiecte Viitoare",
         completedProjects: "Proiecte Finalizate",
@@ -76,6 +77,13 @@ const resources = {
         subtitle: "Oamenii din spatele Acces spre Succes",
         empty: "Echipa va fi anunțată în curând."
       },
+      // Departments Page
+      departmentsPage: {
+        title: "Departamentele Noastre",
+        subtitle: "Descoperă ce face fiecare departament și cine face parte din el",
+        empty: "Nu există departamente momentan.",
+        noMembers: "Nu există încă membri afișați public pentru acest departament."
+      },
       // Projects Pages
       projects: {
         upcoming: {
@@ -141,6 +149,7 @@ const resources = {
         about: "About Us",
         articles: "Articles",
         team: "Team",
+        departments: "Departments",
         projects: "Projects",
         upcomingProjects: "Upcoming Projects",
         completedProjects: "Completed Projects",
@@ -206,6 +215,13 @@ const resources = {
         title: "Our Team",
         subtitle: "The people behind Access to Success",
         empty: "Our team will be announced soon."
+      },
+      // Departments Page
+      departmentsPage: {
+        title: "Our Departments",
+        subtitle: "Discover what each department does and who is part of it",
+        empty: "No departments available at the moment.",
+        noMembers: "No members are publicly listed for this department yet."
       },
       // Projects Pages
       projects: {

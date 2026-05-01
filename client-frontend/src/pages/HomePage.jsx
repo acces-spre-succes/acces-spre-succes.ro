@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLocation } from 'react-router-dom';
@@ -82,11 +82,24 @@ const HomePage = () => {
       .sort((a, b) => (a.displayOrder ?? 0) - (b.displayOrder ?? 0) || a.id - b.id);
   }, [allMembers, activeDeptId]);
 
-  const goToDeptIndex = (delta) => {
-    if (departments.length === 0) return;
-    const idx = departments.findIndex((d) => d.id === activeDeptId);
-    const next = (idx + delta + departments.length) % departments.length;
-    setActiveDeptId(departments[next].id);
+  // Volunteer carousel within the active department
+  const [volIdx, setVolIdx] = useState(0);
+  const volViewportRef = useRef(null);
+
+  useEffect(() => { setVolIdx(0); }, [activeDeptId]);
+
+  useEffect(() => {
+    const viewport = volViewportRef.current;
+    if (!viewport) return;
+    const card = viewport.querySelector('.board-card');
+    if (!card) return;
+    const grid = viewport.querySelector('.board-grid');
+    const gap = grid ? parseFloat(getComputedStyle(grid).gap) || 24 : 24;
+    viewport.scrollTo({ left: volIdx * (card.offsetWidth + gap), behavior: 'smooth' });
+  }, [volIdx]);
+
+  const goVol = (delta) => {
+    setVolIdx((i) => Math.max(0, Math.min(activeMembers.length - 1, i + delta)));
   };
 
   const applyToDepartment = (deptName) => {
@@ -297,12 +310,13 @@ const HomePage = () => {
               ))}
             </div>
 
-            {/* Carousel viewport */}
+            {/* Department panel + volunteer carousel */}
             <div className="departments-carousel">
               <button
                 type="button"
                 className="carousel-arrow carousel-arrow--left"
-                onClick={() => goToDeptIndex(-1)}
+                onClick={() => goVol(-1)}
+                disabled={volIdx === 0}
                 aria-label={t('home.departments.previous')}
               >
                 ‹
@@ -336,35 +350,51 @@ const HomePage = () => {
                       {activeMembers.length === 0 ? (
                         <p className="department-empty">{t('home.departments.empty')}</p>
                       ) : (
-                        <div className="board-grid">
-                          {activeMembers.map((member) => {
-                            const fullName = `${member.firstName} ${member.lastName}`.trim();
-                            const initial = (member.firstName || member.lastName || '?').charAt(0);
-                            return (
-                              <div key={member.id} className="board-card">
-                                <div className="board-image-wrapper">
-                                  <img
-                                    src={member.photoPath ? `${BACKEND_URL}${member.photoPath}` : placeholderAvatar(initial)}
-                                    alt={fullName}
-                                    onError={(e) => {
-                                      e.target.src = placeholderAvatar(initial);
-                                    }}
-                                  />
-                                </div>
-                                <div className="board-info">
-                                  <h3 className="board-name">{fullName}</h3>
-                                  {member.role && <p className="board-position">{member.role}</p>}
-                                  {member.bio && <p className="board-bio">{member.bio}</p>}
-                                  {member.email && (
-                                    <a className="board-email" href={`mailto:${member.email}`}>
-                                      {member.email}
-                                    </a>
-                                  )}
-                                </div>
-                              </div>
-                            );
-                          })}
-                        </div>
+                        <>
+                          <div ref={volViewportRef} className="vol-carousel-viewport">
+                            <div className="board-grid">
+                              {activeMembers.map((member) => {
+                                const fullName = `${member.firstName} ${member.lastName}`.trim();
+                                const initial = (member.firstName || member.lastName || '?').charAt(0);
+                                return (
+                                  <div key={member.id} className="board-card">
+                                    <div className="board-image-wrapper">
+                                      <img
+                                        src={member.photoPath ? `${BACKEND_URL}${member.photoPath}` : placeholderAvatar(initial)}
+                                        alt={fullName}
+                                        onError={(e) => { e.target.src = placeholderAvatar(initial); }}
+                                      />
+                                    </div>
+                                    <div className="board-info">
+                                      <h3 className="board-name">{fullName}</h3>
+                                      {member.role && <p className="board-position">{member.role}</p>}
+                                      {member.bio && <p className="board-bio">{member.bio}</p>}
+                                      {member.email && (
+                                        <a className="board-email" href={`mailto:${member.email}`}>
+                                          {member.email}
+                                        </a>
+                                      )}
+                                    </div>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          </div>
+
+                          {activeMembers.length > 1 && (
+                            <div className="departments-dots">
+                              {activeMembers.map((m, i) => (
+                                <button
+                                  key={m.id}
+                                  type="button"
+                                  className={`carousel-dot ${i === volIdx ? 'active' : ''}`}
+                                  onClick={() => setVolIdx(i)}
+                                  aria-label={`${m.firstName} ${m.lastName}`}
+                                />
+                              ))}
+                            </div>
+                          )}
+                        </>
                       )}
                     </motion.div>
                   )}
@@ -374,24 +404,12 @@ const HomePage = () => {
               <button
                 type="button"
                 className="carousel-arrow carousel-arrow--right"
-                onClick={() => goToDeptIndex(1)}
+                onClick={() => goVol(1)}
+                disabled={volIdx === activeMembers.length - 1}
                 aria-label={t('home.departments.next')}
               >
                 ›
               </button>
-            </div>
-
-            {/* Dot indicators */}
-            <div className="departments-dots">
-              {departments.map((d) => (
-                <button
-                  key={d.id}
-                  type="button"
-                  className={`carousel-dot ${d.id === activeDeptId ? 'active' : ''}`}
-                  onClick={() => setActiveDeptId(d.id)}
-                  aria-label={d.name}
-                />
-              ))}
             </div>
           </div>
         </section>
@@ -423,7 +441,7 @@ const HomePage = () => {
                     {t('home.volunteer.departmentsLabel')}
                   </label>
                   <div className="volunteer-departments-grid">
-                    {departments.map((d) => {
+                    {departments.filter((d) => d.name.toLowerCase() !== 'consiliu director').map((d) => {
                       const checked = interestedDepartments.includes(d.name);
                       return (
                         <label
