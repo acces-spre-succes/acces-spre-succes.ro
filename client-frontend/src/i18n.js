@@ -47,6 +47,21 @@ const resources = {
           previous: "Departamentul anterior",
           next: "Departamentul următor"
         },
+        scroll: {
+          eyebrow: "Impactul nostru",
+          title: "Construim viitorul împreună cu tine",
+          tagline: {
+            a: "Fiecare copil merită o",
+            highlight: "șansă reală",
+            b: "la succes."
+          },
+          stats: {
+            children: "Copii ajutați",
+            departments: "Departamente",
+            volunteers: "Voluntari",
+            years: "Ani de impact"
+          }
+        },
         volunteer: {
           title: "Devino Voluntar",
           subtitle: "Alătură-te echipei noastre și fă diferența!",
@@ -185,6 +200,21 @@ const resources = {
           empty: "No members are publicly listed for this department yet.",
           previous: "Previous department",
           next: "Next department"
+        },
+        scroll: {
+          eyebrow: "Our impact",
+          title: "Building the future together with you",
+          tagline: {
+            a: "Every child deserves a",
+            highlight: "real chance",
+            b: "at success."
+          },
+          stats: {
+            children: "Children helped",
+            departments: "Departments",
+            volunteers: "Volunteers",
+            years: "Years of impact"
+          }
         },
         volunteer: {
           title: "Become a Volunteer",

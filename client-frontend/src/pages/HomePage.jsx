@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useLocation } from 'react-router-dom';
 import axios from 'axios';
 import ColorBends from '../components/ColorBends';
+import ContainerScroll from '../components/ContainerScroll';
 import { API_BASE_URL, BACKEND_URL } from '../config';
 import './HomePage.css';
 
@@ -214,6 +215,43 @@ const HomePage = () => {
           </motion.div>
         </div>
       </motion.section>
+
+      {/* Scroll showcase */}
+      <ContainerScroll
+        titleComponent={
+          <div>
+            <p className="cscroll-eyebrow">{t('home.scroll.eyebrow')}</p>
+            <h2 className="cscroll-title">{t('home.scroll.title')}</h2>
+          </div>
+        }
+      >
+        <div className="impact-preview">
+          <img
+            src="/AccesSpreSuccesLogo.jpeg"
+            alt="Acces spre Succes"
+            className="impact-logo"
+          />
+          <p className="impact-tagline">
+            {t('home.scroll.tagline.a')}{' '}
+            <span>{t('home.scroll.tagline.highlight')}</span>{' '}
+            {t('home.scroll.tagline.b')}
+          </p>
+          <div className="impact-stats">
+            <div className="impact-stat">
+              <span className="impact-stat-number">1000+</span>
+              <span className="impact-stat-label">{t('home.scroll.stats.children')}</span>
+            </div>
+            <div className="impact-stat">
+              <span className="impact-stat-number">8</span>
+              <span className="impact-stat-label">{t('home.scroll.stats.departments')}</span>
+            </div>
+            <div className="impact-stat">
+              <span className="impact-stat-number">20+</span>
+              <span className="impact-stat-label">{t('home.scroll.stats.volunteers')}</span>
+            </div>
+          </div>
+        </div>
+      </ContainerScroll>
 
       {/* About Section */}
       <section className="about-section section">
