@@ -1,6 +1,7 @@
 package com.test.site_ong.event_photos.controller;
 
 import com.test.site_ong.event_photos.model.EventPhoto;
+import com.test.site_ong.event_photos.model.ReorderItem;
 import com.test.site_ong.event_photos.service.EventPhotoService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -34,13 +35,24 @@ public class EventPhotoController {
             @RequestParam Long projectId,
             @RequestParam String projectType,
             @RequestParam(required = false) String caption,
+            @RequestParam(required = false) Integer displayOrder,
             @RequestParam MultipartFile photo) {
         try {
-            return ResponseEntity.ok(service.add(projectId, projectType, caption, photo));
+            return ResponseEntity.ok(service.add(projectId, projectType, caption, displayOrder, photo));
         } catch (IOException e) {
             e.printStackTrace();
             return ResponseEntity.status(500).build();
         }
+    }
+
+    /**
+     * PATCH /api/event-photos/reorder
+     * Body: [{"id": 1, "displayOrder": 0}, {"id": 2, "displayOrder": 1}, ...]
+     */
+    @PatchMapping("/reorder")
+    public ResponseEntity<Void> reorder(@RequestBody List<ReorderItem> items) {
+        service.reorder(items);
+        return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{id}")

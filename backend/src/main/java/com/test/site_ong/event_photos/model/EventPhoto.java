@@ -25,6 +25,8 @@ public class EventPhoto {
     @Column(length = 300)
     private String caption;
 
+    private Integer displayOrder;
+
     private LocalDateTime uploadedAt;
 
     @PrePersist
@@ -42,6 +44,8 @@ public class EventPhoto {
     public void setPhotoPath(String photoPath) { this.photoPath = photoPath; }
     public String getCaption() { return caption; }
     public void setCaption(String caption) { this.caption = caption; }
+    public Integer getDisplayOrder() { return displayOrder; }
+    public void setDisplayOrder(Integer displayOrder) { this.displayOrder = displayOrder; }
     public LocalDateTime getUploadedAt() { return uploadedAt; }
     public void setUploadedAt(LocalDateTime uploadedAt) { this.uploadedAt = uploadedAt; }
 }

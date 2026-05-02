@@ -1,6 +1,7 @@
 package com.test.site_ong.event_photos.service;
 
 import com.test.site_ong.event_photos.model.EventPhoto;
+import com.test.site_ong.event_photos.model.ReorderItem;
 import com.test.site_ong.event_photos.repo.EventPhotoRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -25,17 +26,28 @@ public class EventPhotoService {
     }
 
     public List<EventPhoto> getByProject(Long projectId, String projectType) {
-        return repo.findByProjectIdAndProjectTypeOrderByUploadedAtAsc(projectId, projectType.toUpperCase());
+        return repo.findByProjectIdAndProjectTypeOrderByDisplayOrderAscUploadedAtAsc(
+                projectId, projectType.toUpperCase());
     }
 
     public EventPhoto add(Long projectId, String projectType, String caption,
-                          MultipartFile photo) throws IOException {
+                          Integer displayOrder, MultipartFile photo) throws IOException {
         EventPhoto ep = new EventPhoto();
         ep.setProjectId(projectId);
         ep.setProjectType(projectType.toUpperCase());
         ep.setCaption(caption);
+        ep.setDisplayOrder(displayOrder);
         ep.setPhotoPath(saveFile(photo));
         return repo.save(ep);
+    }
+
+    public void reorder(List<ReorderItem> items) {
+        for (ReorderItem item : items) {
+            repo.findById(item.getId()).ifPresent(ep -> {
+                ep.setDisplayOrder(item.getDisplayOrder());
+                repo.save(ep);
+            });
+        }
     }
 
     public boolean delete(Long id) {
