@@ -19,4 +19,8 @@ public class UpcomingProject {
     private String description;
 
     private String imagePath;
+
+    /** false = upcoming / active, true = completed / finished */
+    @Column(nullable = false, columnDefinition = "boolean default false")
+    private Boolean completed = false;
 }

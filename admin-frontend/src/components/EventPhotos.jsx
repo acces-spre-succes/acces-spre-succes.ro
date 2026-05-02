@@ -117,6 +117,8 @@ export default function EventPhotos() {
         setUploading(false);
         setUploadProgress("");
         setQueue([]);
+        // Reset the file input so the same files can be selected again
+        if (fileInputRef.current) fileInputRef.current.value = "";
         setPhotos(prev => [...prev, ...uploaded]);
         if (failed === 0) {
             setMsg({ text: `${total} fotografi${total === 1 ? "e" : "i"} adăugat${total === 1 ? "ă" : "e"} cu succes!`, error: false });
@@ -306,7 +308,10 @@ export default function EventPhotos() {
                                 </button>
                                 <button
                                     className="btn-secondary-action"
-                                    onClick={() => setQueue([])}
+                                    onClick={() => {
+                                        setQueue([]);
+                                        if (fileInputRef.current) fileInputRef.current.value = "";
+                                    }}
                                     disabled={uploading}
                                 >
                                     Anulează selecția

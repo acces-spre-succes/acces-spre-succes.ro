@@ -10,8 +10,7 @@ import Settings from "./components/Settings";
 import Testimonials from "./components/Testimonials";
 import EventPhotos from "./components/EventPhotos";
 import "./styles/style.css";
-import UpcomingProjects from "./components/UpcomingProjects";
-import CompletedProjects from "./components/CompletedProjects";
+import Projects from "./components/Projects";
 import { getUsername, isAuthenticated, logout, verifyToken } from "./services/auth";
 
 export default function App() {
@@ -64,8 +63,7 @@ export default function App() {
                     {activeSection === "team" && <TeamMembers />}
                     {activeSection === "departments" && <Departments />}
                     {activeSection === "volunteers" && <Volunteers />}
-                    {activeSection === "upcomingProjects" && <UpcomingProjects />}
-                    {activeSection === "completedProjects" && <CompletedProjects />}
+                    {activeSection === "projects" && <Projects />}
                     {activeSection === "donators" && <Donators />}
                     {activeSection === "testimonials" && <Testimonials />}
                     {activeSection === "eventPhotos" && <EventPhotos />}

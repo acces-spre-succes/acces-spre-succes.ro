@@ -47,7 +47,6 @@ export default function Login({ onLogin }) {
                             onChange={e => setUsername(e.target.value)}
                             autoComplete="username"
                             autoFocus
-                            placeholder="admin"
                         />
                     </div>
 

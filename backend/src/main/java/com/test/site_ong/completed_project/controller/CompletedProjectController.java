@@ -1,7 +1,7 @@
 package com.test.site_ong.completed_project.controller;
 
-import com.test.site_ong.completed_project.model.CompletedProject;
-import com.test.site_ong.completed_project.service.CompletedProjectService;
+import com.test.site_ong.upcoming_project.model.UpcomingProject;
+import com.test.site_ong.upcoming_project.service.UpcomingProjectService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -9,47 +9,37 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * Delegates to UpcomingProjectService so that projects with completed=true
+ * appear at /api/completed-projects — the public site keeps working unchanged.
+ */
 @RestController
 @RequestMapping("/api/completed-projects")
 public class CompletedProjectController {
 
-    private final CompletedProjectService projectService;
+    private final UpcomingProjectService service;
 
-    public CompletedProjectController(CompletedProjectService projectService) {
-        this.projectService = projectService;
+    public CompletedProjectController(UpcomingProjectService service) {
+        this.service = service;
     }
 
     @GetMapping
-    public List<CompletedProject> getAll() {
-        return projectService.getAll();
+    public List<UpcomingProject> getAll() {
+        return service.getCompleted();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CompletedProject> getProjectById(@PathVariable Long id) {
-        CompletedProject project = projectService.getById(id);
-        if (project != null) {
-            return ResponseEntity.ok(project);
+    public ResponseEntity<UpcomingProject> getById(@PathVariable Long id) {
+        UpcomingProject p = service.getById(id);
+        if (p == null || !Boolean.TRUE.equals(p.getCompleted())) {
+            return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.notFound().build();
-    }
-
-    @PostMapping
-    public ResponseEntity<CompletedProject> addProject(
-            @RequestParam String title,
-            @RequestParam String description,
-            @RequestParam(required = false) MultipartFile image
-    ) {
-        try {
-            CompletedProject project = projectService.addProject(title, description, image);
-            return ResponseEntity.ok(project);
-        } catch (IOException e) {
-            return ResponseEntity.status(500).build();
-        }
+        return ResponseEntity.ok(p);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteProject(@PathVariable Long id) {
-        projectService.deleteProject(id);
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        service.deleteProject(id);
         return ResponseEntity.ok().build();
     }
 }

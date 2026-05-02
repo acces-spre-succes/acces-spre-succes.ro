@@ -175,14 +175,14 @@ const resources = {
       // Home Page
       home: {
         hero: {
-          title: "Access to Success",
+          title: "Acces spre Succes",
           subtitle: "Child Development and Education - Building the Future Together!",
           cta: "Become a Volunteer",
           donateBtn: "Donate Now"
         },
         about: {
           title: "About Us",
-          description: "Access to Success is a non-profit organization dedicated to the development and education of children in Romania. Our mission is to give every child the chance to reach their full potential through quality educational programs and constant support.",
+          description: "Acces spre Succes is a non-profit organization dedicated to the development and education of children in Romania. Our mission is to give every child the chance to reach their full potential through quality educational programs and constant support.",
           mission: "Our Mission",
           missionText: "We create equal opportunities for all children through quality education, mentoring and emotional support.",
           vision: "Our Vision",
@@ -236,14 +236,14 @@ const resources = {
       // Articles Page
       articles: {
         title: "Articles and News",
-        subtitle: "Latest news and stories from Access to Success",
+        subtitle: "Latest news and stories from Acces spre Succes",
         readMore: "Read More",
         noArticles: "No articles available at the moment."
       },
       // Team Page
       team: {
         title: "Our Team",
-        subtitle: "The people behind Access to Success",
+        subtitle: "The people behind Acces spre Succes",
         empty: "Our team will be announced soon."
       },
       // Departments Page
