@@ -102,9 +102,10 @@
 .detail-image {
   width: 100%;
   height: auto;
-  max-height: 500px;
-  object-fit: cover;
+  max-height: 600px;
+  object-fit: contain;
   display: block;
+  background: #f8f8f8;
 }
 
 .detail-description {
@@ -222,7 +223,7 @@
   }
 
   .detail-image {
-    max-height: 300px;
+    max-height: 350px;
   }
 
   .detail-actions {

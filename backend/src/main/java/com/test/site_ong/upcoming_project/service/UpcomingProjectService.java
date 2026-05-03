@@ -59,6 +59,20 @@ public class UpcomingProjectService {
         return repository.save(project);
     }
 
+    public UpcomingProject updateProject(Long id, String title, String description, MultipartFile image) throws IOException {
+        UpcomingProject project = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Project not found: " + id));
+        project.setTitle(title);
+        project.setDescription(description);
+        if (image != null && !image.isEmpty()) {
+            String fileName = System.currentTimeMillis() + "_" + image.getOriginalFilename();
+            File dest = new File(uploadDir + "/" + fileName);
+            image.transferTo(dest);
+            project.setImagePath("/uploads/" + fileName);
+        }
+        return repository.save(project);
+    }
+
     /** Toggle the completed flag and return the updated project. */
     public UpcomingProject toggleStatus(Long id) {
         UpcomingProject project = repository.findById(id)

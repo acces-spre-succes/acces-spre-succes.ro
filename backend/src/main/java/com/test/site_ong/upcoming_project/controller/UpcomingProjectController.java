@@ -50,6 +50,22 @@ public class UpcomingProjectController {
         }
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<UpcomingProject> update(
+            @PathVariable Long id,
+            @RequestParam String title,
+            @RequestParam String description,
+            @RequestParam(required = false) MultipartFile image) {
+        try {
+            return ResponseEntity.ok(service.updateProject(id, title, description, image));
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        } catch (java.io.IOException e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
     /** Toggle completed ↔ active. Admin only (secured by default deny-all rule). */
     @PatchMapping("/{id}/status")
     public ResponseEntity<UpcomingProject> toggleStatus(@PathVariable Long id) {
