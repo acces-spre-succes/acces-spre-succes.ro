@@ -97,8 +97,6 @@ const ProjectDetailPage = () => {
 
           <div className="detail-content">
             <div className="detail-header">
-              <img src="/AccesSpreSuccesLogo.jpeg" alt="Acces Spre Succes" className="detail-logo"
-                onError={e => { e.target.style.display = 'none'; }} />
               <motion.h1 className="detail-title" variants={fadeIn}>{project.title}</motion.h1>
             </div>
 
@@ -132,7 +130,11 @@ const ProjectDetailPage = () => {
                       <img
                         src={`${BACKEND_URL}${photo.photoPath}`}
                         alt={photo.caption || `Fotografie ${idx + 1}`}
-                        loading="lazy"
+                        onLoad={e => {
+                          e.target.classList.add('loaded');
+                          e.target.parentElement.style.animation = 'none';
+                          e.target.parentElement.style.background = 'none';
+                        }}
                       />
                       {photo.caption && (
                         <span className="detail-gallery__caption">{photo.caption}</span>

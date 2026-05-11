@@ -67,21 +67,26 @@ const Navbar = () => {
             {t('nav.departments')}
           </Link>
           <div className="nav-dropdown">
-            <span className="nav-link">{t('nav.projects')}</span>
+            <span className="nav-link nav-link--dropdown">
+              {t('nav.projects')}
+              <svg className="dropdown-chevron" viewBox="0 0 10 6" width="10" height="6" aria-hidden="true">
+                <path d="M0 0l5 6 5-6z" fill="currentColor"/>
+              </svg>
+            </span>
             <div className="dropdown-content">
-              <Link
-                to="/upcoming-projects"
-                className="dropdown-link"
-                onClick={closeMenu}
-              >
-                {t('nav.upcomingProjects')}
+              <Link to="/upcoming-projects" className="dropdown-link" onClick={closeMenu}>
+                <span className="dropdown-link__icon">🚀</span>
+                <span className="dropdown-link__body">
+                  <strong>{t('nav.upcomingProjects')}</strong>
+                  <small>{i18n.language === 'ro' ? 'Proiecte în desfășurare' : 'Ongoing initiatives'}</small>
+                </span>
               </Link>
-              <Link
-                to="/completed-projects"
-                className="dropdown-link"
-                onClick={closeMenu}
-              >
-                {t('nav.completedProjects')}
+              <Link to="/completed-projects" className="dropdown-link" onClick={closeMenu}>
+                <span className="dropdown-link__icon">✅</span>
+                <span className="dropdown-link__body">
+                  <strong>{t('nav.completedProjects')}</strong>
+                  <small>{i18n.language === 'ro' ? 'Ce am realizat împreună' : 'What we achieved together'}</small>
+                </span>
               </Link>
             </div>
           </div>
