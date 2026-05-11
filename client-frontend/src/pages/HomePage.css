@@ -295,11 +295,6 @@
   position: relative;
 }
 
-@media (max-width: 600px) {
-  .carousel-stage {
-    overflow: visible;
-  }
-}
 
 .carousel-arrow {
   flex: 0 0 auto;
@@ -400,20 +395,19 @@
     display: none;
   }
 
-  /* let the viewport scroll natively with touch */
+  /* native touch-scroll with snap */
   .vol-carousel-viewport {
     overflow-x: auto;
     scroll-snap-type: x mandatory;
     -webkit-overflow-scrolling: touch;
-    /* hide scrollbar while keeping functionality */
-    scrollbar-width: none;          /* Firefox */
+    scrollbar-width: none;
   }
-  .vol-carousel-viewport::-webkit-scrollbar { display: none; } /* Chrome/Safari */
+  .vol-carousel-viewport::-webkit-scrollbar { display: none; }
 
-  /* each card snaps and shows a peek of the next */
+  /* one card fills the viewport — snap to each */
   .board-card {
     scroll-snap-align: start;
-    flex: 0 0 88%;   /* ~88% wide so ~12% of next card peeks */
+    flex: 0 0 100%;
   }
 
   .department-panel {
@@ -422,11 +416,6 @@
 
   .department-name {
     font-size: 1.4rem;
-  }
-
-  /* carousel-stage: remove side padding so peek is visible */
-  .carousel-stage {
-    overflow: visible;
   }
 }
 
@@ -641,9 +630,6 @@
     grid-template-columns: 1fr;
   }
 
-  .board-card {
-    flex: 0 0 100%;
-  }
 }
 
 @media (max-width: 480px) {

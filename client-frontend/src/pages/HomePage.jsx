@@ -85,10 +85,12 @@ const HomePage = () => {
 
   // Volunteer carousel within the active department
   const [volIdx, setVolIdx] = useState(0);
+  const [needsNav, setNeedsNav] = useState(false);
   const volViewportRef = useRef(null);
 
   useEffect(() => { setVolIdx(0); }, [activeDeptId]);
 
+  // Scroll viewport to the active card
   useEffect(() => {
     const viewport = volViewportRef.current;
     if (!viewport) return;
@@ -98,6 +100,17 @@ const HomePage = () => {
     const gap = grid ? parseFloat(getComputedStyle(grid).gap) || 24 : 24;
     viewport.scrollTo({ left: volIdx * (card.offsetWidth + gap), behavior: 'smooth' });
   }, [volIdx]);
+
+  // Determine whether navigation (arrows/dots) is actually needed
+  useEffect(() => {
+    const viewport = volViewportRef.current;
+    if (!viewport) { setNeedsNav(false); return; }
+    const check = () => setNeedsNav(viewport.scrollWidth > viewport.clientWidth + 2);
+    // Run after the browser has laid out the new cards
+    const raf = requestAnimationFrame(check);
+    window.addEventListener('resize', check);
+    return () => { cancelAnimationFrame(raf); window.removeEventListener('resize', check); };
+  }, [activeMembers]);
 
   const goVol = (delta) => {
     setVolIdx((i) => Math.max(0, Math.min(activeMembers.length - 1, i + delta)));
@@ -350,15 +363,17 @@ const HomePage = () => {
 
             {/* Department panel + volunteer carousel */}
             <div className="departments-carousel">
-              <button
-                type="button"
-                className="carousel-arrow carousel-arrow--left"
-                onClick={() => goVol(-1)}
-                disabled={volIdx === 0}
-                aria-label={t('home.departments.previous')}
-              >
-                ‹
-              </button>
+              {needsNav && (
+                <button
+                  type="button"
+                  className="carousel-arrow carousel-arrow--left"
+                  onClick={() => goVol(-1)}
+                  disabled={volIdx === 0}
+                  aria-label={t('home.departments.previous')}
+                >
+                  ‹
+                </button>
+              )}
 
               <div className="carousel-stage">
                 <AnimatePresence mode="wait">
@@ -419,7 +434,7 @@ const HomePage = () => {
                             </div>
                           </div>
 
-                          {activeMembers.length > 1 && (
+                          {needsNav && activeMembers.length > 1 && (
                             <div className="departments-dots">
                               {activeMembers.map((m, i) => (
                                 <button
@@ -439,15 +454,17 @@ const HomePage = () => {
                 </AnimatePresence>
               </div>
 
-              <button
-                type="button"
-                className="carousel-arrow carousel-arrow--right"
-                onClick={() => goVol(1)}
-                disabled={volIdx === activeMembers.length - 1}
-                aria-label={t('home.departments.next')}
-              >
-                ›
-              </button>
+              {needsNav && (
+                <button
+                  type="button"
+                  className="carousel-arrow carousel-arrow--right"
+                  onClick={() => goVol(1)}
+                  disabled={volIdx === activeMembers.length - 1}
+                  aria-label={t('home.departments.next')}
+                >
+                  ›
+                </button>
+              )}
             </div>
           </div>
         </section>
