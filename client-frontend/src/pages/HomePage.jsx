@@ -90,26 +90,47 @@ const HomePage = () => {
 
   useEffect(() => { setVolIdx(0); }, [activeDeptId]);
 
-  // Scroll viewport to the active card
+  // Preload every member photo into the browser cache as soon as the
+  // team data arrives — so switching departments shows images instantly.
+  useEffect(() => {
+    allMembers.forEach((m) => {
+      if (m.photoPath) {
+        const img = new Image();
+        img.src = `${BACKEND_URL}${m.photoPath}`;
+      }
+    });
+  }, [allMembers]);
+
+  // Scroll viewport to the active card (desktop JS-driven scroll)
   useEffect(() => {
     const viewport = volViewportRef.current;
     if (!viewport) return;
     const card = viewport.querySelector('.board-card');
     if (!card) return;
-    const grid = viewport.querySelector('.board-grid');
-    const gap = grid ? parseFloat(getComputedStyle(grid).gap) || 24 : 24;
+    const gap = parseFloat(getComputedStyle(viewport).gap) || 0;
     viewport.scrollTo({ left: volIdx * (card.offsetWidth + gap), behavior: 'smooth' });
   }, [volIdx]);
 
-  // Determine whether navigation (arrows/dots) is actually needed
+  // Determine whether navigation (arrows/dots) is needed.
+  // Reset immediately on dept change, then re-check after the
+  // framer-motion panel animation (≈350ms) has fully settled.
   useEffect(() => {
+    setNeedsNav(false); // hide nav instantly while animating
     const viewport = volViewportRef.current;
-    if (!viewport) { setNeedsNav(false); return; }
-    const check = () => setNeedsNav(viewport.scrollWidth > viewport.clientWidth + 2);
-    // Run after the browser has laid out the new cards
-    const raf = requestAnimationFrame(check);
+    if (!viewport) return;
+
+    const check = () =>
+      setNeedsNav(viewport.scrollWidth > viewport.clientWidth + 2);
+
+    // Wait for exit+enter animation to finish before measuring
+    const timer = setTimeout(check, 420);
+
+    // Also re-check on resize
     window.addEventListener('resize', check);
-    return () => { cancelAnimationFrame(raf); window.removeEventListener('resize', check); };
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener('resize', check);
+    };
   }, [activeMembers]);
 
   const goVol = (delta) => {

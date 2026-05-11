@@ -395,8 +395,18 @@
     display: none;
   }
 
-  /* native touch-scroll with snap */
+  /*
+   * Make the viewport itself the flex scroll container.
+   * board-grid becomes display:contents so its children
+   * participate directly in the viewport's flex, letting
+   * flex: 0 0 100% mean "100% of the scroll container"
+   * instead of "100% of the nested grid".
+   */
   .vol-carousel-viewport {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    gap: 0;
     overflow-x: auto;
     scroll-snap-type: x mandatory;
     -webkit-overflow-scrolling: touch;
@@ -404,10 +414,17 @@
   }
   .vol-carousel-viewport::-webkit-scrollbar { display: none; }
 
-  /* one card fills the viewport — snap to each */
+  /* transparent wrapper — children bubble up to viewport flex */
+  .vol-carousel-viewport > .board-grid {
+    display: contents;
+  }
+
+  /* each card = exactly the scroll container width */
   .board-card {
     scroll-snap-align: start;
     flex: 0 0 100%;
+    min-width: 100%;
+    max-width: 100%;
   }
 
   .department-panel {
