@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { API_BASE_URL, BACKEND_URL } from "../config";
 import { authFetch } from "../services/auth";
 import CropperModal from "./CropperModal";
@@ -9,7 +9,6 @@ const emptyForm = {
     email: "",
     role: "",
     bio: "",
-    displayOrder: "",
     departmentIds: [],
     photo: null,
 };
@@ -21,12 +20,13 @@ export default function TeamMembers() {
     const [form, setForm] = useState(emptyForm);
     const [editingId, setEditingId] = useState(null);
     const [busy, setBusy] = useState(false);
-    // bumped on every successful save / cancel — keying the file input on
-    // it forces React to re-mount the <input>, which is the only reliable
-    // way to clear the displayed filename for an uncontrolled file input.
     const [formNonce, setFormNonce] = useState(0);
-    // Set when the user picks a file; opens the CropperModal.
     const [pendingFile, setPendingFile] = useState(null);
+
+    // Drag-and-drop state
+    const dragIdx = useRef(null);
+    const [dragOverIdx, setDragOverIdx] = useState(null);
+    const [reordering, setReordering] = useState(false);
 
     useEffect(() => {
         loadMembers();
@@ -55,11 +55,11 @@ export default function TeamMembers() {
             email: m.email || "",
             role: m.role || "",
             bio: m.bio || "",
-            displayOrder: m.displayOrder ?? "",
             departmentIds: (m.departments || []).map((d) => d.id),
             photo: null,
         });
         setFormNonce((n) => n + 1);
+        window.scrollTo({ top: 0, behavior: "smooth" });
     };
 
     const cancelEdit = () => {
@@ -84,9 +84,7 @@ export default function TeamMembers() {
         if (file) setPendingFile(file);
     };
 
-    const handleCropCancel = () => {
-        setPendingFile(null);
-    };
+    const handleCropCancel = () => setPendingFile(null);
 
     const handleCropDone = (croppedFile) => {
         setForm((prev) => ({ ...prev, photo: croppedFile }));
@@ -106,7 +104,6 @@ export default function TeamMembers() {
             fd.append("email", form.email);
             if (form.role) fd.append("role", form.role);
             if (form.bio) fd.append("bio", form.bio);
-            if (form.displayOrder !== "") fd.append("displayOrder", form.displayOrder);
             form.departmentIds.forEach((id) => fd.append("departmentIds", String(id)));
             if (form.photo) fd.append("photo", form.photo);
 
@@ -138,11 +135,63 @@ export default function TeamMembers() {
         if (!window.confirm("Ștergi acest membru din echipă?")) return;
         const res = await authFetch(`${API_BASE_URL}/team/${id}`, { method: "DELETE" });
         if (res.ok) {
-            setMembers(members.filter((m) => m.id !== id));
+            setMembers((prev) => prev.filter((m) => m.id !== id));
         } else {
             alert("Nu s-a putut șterge.");
         }
     };
+
+    // ── Drag-and-drop reorder ─────────────────────────────────────────────
+    const handleDragStart = (e, idx) => {
+        dragIdx.current = idx;
+        e.dataTransfer.effectAllowed = "move";
+    };
+
+    const handleDragEnter = (idx) => {
+        if (dragIdx.current !== idx) setDragOverIdx(idx);
+    };
+
+    const handleDragEnd = async () => {
+        const from = dragIdx.current;
+        const to = dragOverIdx;
+        dragIdx.current = null;
+        setDragOverIdx(null);
+
+        if (to === null || from === to) return;
+
+        // Reorder the local visible list
+        const list = [...visibleMembers];
+        const [moved] = list.splice(from, 1);
+        list.splice(to, 0, moved);
+
+        // Assign new displayOrder values (0-based) and update full members array
+        const updated = list.map((m, i) => ({ ...m, displayOrder: i }));
+        // Merge back into the full members array
+        setMembers((prev) => {
+            const map = {};
+            updated.forEach((m) => { map[m.id] = m; });
+            return prev.map((m) => map[m.id] ?? m);
+        });
+
+        // Persist to server
+        setReordering(true);
+        try {
+            const payload = updated.map((m, i) => ({ id: m.id, displayOrder: i }));
+            const res = await authFetch(`${API_BASE_URL}/team/reorder`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload),
+            });
+            if (!res.ok) throw new Error("Reordonare eșuată");
+        } catch (err) {
+            console.error(err);
+            alert("Nu s-a putut salva ordinea. Reîncarcă pagina.");
+            loadMembers(); // revert
+        } finally {
+            setReordering(false);
+        }
+    };
+    // ─────────────────────────────────────────────────────────────────────
 
     const visibleMembers =
         filter === "ALL"
@@ -199,13 +248,7 @@ export default function TeamMembers() {
                             {departments.map((d) => (
                                 <label
                                     key={d.id}
-                                    style={{
-                                        display: "flex",
-                                        alignItems: "center",
-                                        gap: "6px",
-                                        cursor: "pointer",
-                                        fontSize: "14px",
-                                    }}
+                                    style={{ display: "flex", alignItems: "center", gap: "6px", cursor: "pointer", fontSize: "14px" }}
                                 >
                                     <input
                                         type="checkbox"
@@ -220,13 +263,6 @@ export default function TeamMembers() {
                     )}
                 </div>
 
-                <input
-                    type="number"
-                    placeholder="Ordine afișare (0 = primul)"
-                    value={form.displayOrder}
-                    onChange={(e) => setForm({ ...form, displayOrder: e.target.value })}
-                />
-
                 <div>
                     <input
                         key={formNonce}
@@ -237,7 +273,6 @@ export default function TeamMembers() {
                     {form.photo && (
                         <p style={{ fontSize: "13px", color: "#166534", marginTop: "4px" }}>
                             Imagine pregătită pentru upload ({Math.round(form.photo.size / 1024)} KB).
-                            După salvare se va decupa automat la 1:1.
                         </p>
                     )}
                 </div>
@@ -254,6 +289,7 @@ export default function TeamMembers() {
                 </div>
             </div>
 
+            {/* ── Member list with drag-to-reorder ── */}
             <div style={{ marginTop: "30px", display: "flex", gap: "12px", alignItems: "center", flexWrap: "wrap" }}>
                 <h2 style={{ margin: 0 }}>Membri actuali</h2>
                 <select
@@ -267,37 +303,66 @@ export default function TeamMembers() {
                     ))}
                     <option value="NONE">Fără departament</option>
                 </select>
+                {reordering && (
+                    <span style={{ fontSize: "13px", color: "#888" }}>Se salvează ordinea…</span>
+                )}
             </div>
 
-            <div className="articles-list" style={{ marginTop: "16px" }}>
+            <p style={{ fontSize: "13px", color: "#888", marginTop: "6px", marginBottom: "12px" }}>
+                ☰ Trage cardurile pentru a schimba ordinea de afișare pe site.
+            </p>
+
+            <div className="articles-list" style={{ marginTop: "0" }}>
                 {visibleMembers.length === 0 ? (
                     <p>Nu există membri în această categorie.</p>
                 ) : (
-                    visibleMembers.map((m) => (
-                        <div key={m.id} className="article-card">
+                    visibleMembers.map((m, idx) => (
+                        <div
+                            key={m.id}
+                            className="article-card"
+                            draggable
+                            onDragStart={(e) => handleDragStart(e, idx)}
+                            onDragEnter={() => handleDragEnter(idx)}
+                            onDragOver={(e) => e.preventDefault()}
+                            onDragEnd={handleDragEnd}
+                            style={{
+                                cursor: "grab",
+                                opacity: dragOverIdx === idx ? 0.5 : 1,
+                                border: dragOverIdx === idx ? "2px dashed #1d4771" : undefined,
+                                transition: "opacity 0.15s, border 0.15s",
+                                userSelect: "none",
+                            }}
+                        >
                             <div style={{ display: "flex", gap: "16px", alignItems: "flex-start" }}>
+                                {/* Drag handle */}
+                                <div style={{
+                                    display: "flex", flexDirection: "column", justifyContent: "center",
+                                    color: "#aaa", fontSize: "20px", flexShrink: 0, paddingTop: "4px",
+                                    cursor: "grab", lineHeight: 1.2,
+                                }}>
+                                    ⠿
+                                </div>
+
                                 {m.photoPath && (
                                     <img
                                         src={`${BACKEND_URL}${m.photoPath}`}
                                         alt={`${m.firstName} ${m.lastName}`}
-                                        style={{ width: "96px", height: "96px", objectFit: "cover", borderRadius: "8px" }}
+                                        style={{ width: "80px", height: "80px", objectFit: "cover", borderRadius: "8px", flexShrink: 0 }}
                                     />
                                 )}
                                 <div style={{ flex: 1 }}>
-                                    <h3>{m.firstName} {m.lastName}</h3>
-                                    {m.role && <p style={{ fontWeight: "bold", color: "#4c51bf" }}>{m.role}</p>}
-                                    <p>{m.email}</p>
-                                    {m.bio && <p style={{ color: "#555" }}>{m.bio}</p>}
-                                    <p style={{ fontSize: "12px", color: "#888" }}>
-                                        Departamente:{" "}
+                                    <h3 style={{ marginBottom: "2px" }}>{m.firstName} {m.lastName}</h3>
+                                    {m.role && <p style={{ fontWeight: "bold", color: "#4c51bf", marginBottom: "2px" }}>{m.role}</p>}
+                                    <p style={{ marginBottom: "2px" }}>{m.email}</p>
+                                    <p style={{ fontSize: "12px", color: "#888", margin: 0 }}>
                                         {m.departments && m.departments.length > 0
                                             ? m.departments.map((d) => d.name).join(", ")
-                                            : "(niciunul)"}
-                                        {" "}· Ordine: {m.displayOrder ?? 0}
+                                            : "(fără departament)"}
+                                        {" "}· Poziție: #{idx + 1}
                                     </p>
                                 </div>
                             </div>
-                            <div style={{ display: "flex", gap: "8px" }}>
+                            <div style={{ display: "flex", gap: "8px", marginTop: "10px" }}>
                                 <button className="button-add" onClick={() => startEdit(m)}>Editează</button>
                                 <button className="button-delete" onClick={() => handleDelete(m.id)}>Șterge</button>
                             </div>

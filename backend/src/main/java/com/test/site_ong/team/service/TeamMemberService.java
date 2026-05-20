@@ -3,6 +3,7 @@ package com.test.site_ong.team.service;
 import com.test.site_ong.departments.model.Department;
 import com.test.site_ong.departments.repo.DepartmentRepository;
 import com.test.site_ong.team.model.TeamMember;
+import com.test.site_ong.team.model.TeamReorderItem;
 import com.test.site_ong.team.repo.TeamMemberRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -12,7 +13,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class TeamMemberService {
@@ -98,6 +101,15 @@ public class TeamMemberService {
         if (!repo.existsById(id)) return false;
         repo.deleteById(id);
         return true;
+    }
+
+    /** Bulk-update displayOrder for a set of members (drag-and-drop reorder). */
+    public void reorder(List<TeamReorderItem> items) {
+        Map<Long, Integer> orderMap = items.stream()
+                .collect(Collectors.toMap(TeamReorderItem::getId, TeamReorderItem::getDisplayOrder));
+        List<TeamMember> affected = repo.findAllById(orderMap.keySet());
+        affected.forEach(m -> m.setDisplayOrder(orderMap.get(m.getId())));
+        repo.saveAll(affected);
     }
 
     private Set<Department> resolveDepartments(List<Long> ids) {

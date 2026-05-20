@@ -1,6 +1,7 @@
 package com.test.site_ong.team.controller;
 
 import com.test.site_ong.team.model.TeamMember;
+import com.test.site_ong.team.model.TeamReorderItem;
 import com.test.site_ong.team.service.TeamMemberService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -73,6 +74,12 @@ public class TeamMemberController {
             e.printStackTrace();
             return ResponseEntity.status(500).build();
         }
+    }
+
+    @PatchMapping("/reorder")
+    public ResponseEntity<Void> reorder(@RequestBody List<TeamReorderItem> items) {
+        service.reorder(items);
+        return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{id}")
