@@ -47,6 +47,10 @@ const resources = {
           previous: "Departamentul anterior",
           next: "Departamentul următor"
         },
+        board: {
+          title: "Consiliu Director",
+          subtitle: "Persoanele care ghidează misiunea și valorile asociației"
+        },
         scroll: {
           eyebrow: "Impactul nostru",
           title: "Construim viitorul împreună cu tine",
@@ -95,9 +99,10 @@ const resources = {
       // Departments Page
       departmentsPage: {
         title: "Departamentele Noastre",
-        subtitle: "Descoperă ce face fiecare departament și cine face parte din el",
+        subtitle: "Descoperă ce face fiecare departament și cine poate fi contactat",
         empty: "Nu există departamente momentan.",
-        noMembers: "Nu există încă membri afișați public pentru acest departament."
+        noMembers: "Nu există încă membri afișați public pentru acest departament.",
+        contact: "Contact departament"
       },
       // Projects Pages
       projects: {
@@ -189,8 +194,8 @@ const resources = {
           visionText: "A Romania where every child has access to quality education and equal chances of success."
         },
         board: {
-          title: "Our Team",
-          subtitle: "Board Members",
+          title: "Board of Directors",
+          subtitle: "The people who guide the mission and values of the association",
           position: "Position"
         },
         departments: {
@@ -249,9 +254,10 @@ const resources = {
       // Departments Page
       departmentsPage: {
         title: "Our Departments",
-        subtitle: "Discover what each department does and who is part of it",
+        subtitle: "Discover what each department does and who to contact",
         empty: "No departments available at the moment.",
-        noMembers: "No members are publicly listed for this department yet."
+        noMembers: "No members are publicly listed for this department yet.",
+        contact: "Department contact"
       },
       // Projects Pages
       projects: {

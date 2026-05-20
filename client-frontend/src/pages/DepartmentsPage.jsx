@@ -39,12 +39,19 @@ const DepartmentsPage = () => {
       .finally(() => setLoading(false));
   }, [t]);
 
-  const membersByDept = useMemo(() => {
+  // For each department, find sorted members and pick the "president" contact
+  const presidentByDept = useMemo(() => {
     const map = {};
     departments.forEach((d) => {
-      map[d.id] = allMembers
+      const members = allMembers
         .filter((m) => (m.departments || []).some((md) => md.id === d.id))
         .sort((a, b) => (a.displayOrder ?? 0) - (b.displayOrder ?? 0) || a.id - b.id);
+      // Prefer a member whose role contains "presedinte" / "președinte"
+      const president =
+        members.find((m) => m.role && /pre[șs]edinte/i.test(m.role)) ||
+        members[0] ||
+        null;
+      map[d.id] = { members, president };
     });
     return map;
   }, [departments, allMembers]);
@@ -93,7 +100,13 @@ const DepartmentsPage = () => {
             </motion.p>
           ) : (
             departments.map((dept, i) => {
-              const members = membersByDept[dept.id] || [];
+              const { president } = presidentByDept[dept.id] || {};
+              const fullName = president
+                ? `${president.firstName} ${president.lastName}`.trim()
+                : null;
+              const initial = president
+                ? (president.firstName || president.lastName || '?').charAt(0)
+                : '?';
               return (
                 <motion.div
                   key={dept.id}
@@ -113,42 +126,25 @@ const DepartmentsPage = () => {
                     </div>
                   </motion.div>
 
-                  {members.length === 0 ? (
-                    <motion.p className="dept-block-empty" variants={fadeInUp}>
-                      {t('departmentsPage.noMembers')}
-                    </motion.p>
-                  ) : (
-                    <motion.div className="dept-members-grid" variants={stagger}>
-                      {members.map((m) => {
-                        const fullName = `${m.firstName} ${m.lastName}`.trim();
-                        const initial = (m.firstName || m.lastName || '?').charAt(0);
-                        return (
-                          <motion.div
-                            key={m.id}
-                            className="dept-member-card"
-                            variants={fadeInUp}
-                            whileHover={{ y: -5, transition: { duration: 0.2 } }}
-                          >
-                            <div className="dept-member-photo">
-                              <img
-                                src={m.photoPath ? `${BACKEND_URL}${m.photoPath}` : placeholderAvatar(initial)}
-                                alt={fullName}
-                                onError={(e) => { e.target.src = placeholderAvatar(initial); }}
-                              />
-                            </div>
-                            <div className="dept-member-info">
-                              <h3 className="dept-member-name">{fullName}</h3>
-                              {m.role && <p className="dept-member-role">{m.role}</p>}
-                              {m.bio && <p className="dept-member-bio">{m.bio}</p>}
-                              {m.email && (
-                                <a className="dept-member-email" href={`mailto:${m.email}`}>
-                                  {m.email}
-                                </a>
-                              )}
-                            </div>
-                          </motion.div>
-                        );
-                      })}
+                  {president && (
+                    <motion.div className="dept-contact" variants={fadeInUp}>
+                      <div className="dept-contact-photo">
+                        <img
+                          src={president.photoPath ? `${BACKEND_URL}${president.photoPath}` : placeholderAvatar(initial)}
+                          alt={fullName}
+                          onError={(e) => { e.target.src = placeholderAvatar(initial); }}
+                        />
+                      </div>
+                      <div className="dept-contact-info">
+                        <p className="dept-contact-label">{t('departmentsPage.contact')}</p>
+                        <h3 className="dept-contact-name">{fullName}</h3>
+                        {president.role && <p className="dept-contact-role">{president.role}</p>}
+                        {president.email && (
+                          <a className="dept-contact-email" href={`mailto:${president.email}`}>
+                            {president.email}
+                          </a>
+                        )}
+                      </div>
                     </motion.div>
                   )}
                 </motion.div>

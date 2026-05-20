@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useLocation } from 'react-router-dom';
 import axios from 'axios';
 import ColorBends from '../components/ColorBends';
@@ -29,10 +29,9 @@ const HomePage = () => {
   const [formStatus, setFormStatus] = useState({ type: '', message: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Departments + members for the carousel
+  // Departments + members for the board section and volunteer form
   const [departments, setDepartments] = useState([]);
   const [allMembers, setAllMembers] = useState([]);
-  const [activeDeptId, setActiveDeptId] = useState(null);
 
   // Pre-tick the volunteer form's department checkbox(es) if the URL says so
   // (e.g. /?department=Evenimente#volunteer from the carousel button or other pages).
@@ -57,10 +56,6 @@ const HomePage = () => {
         if (cancelled) return;
         setDepartments(depts);
         setAllMembers(members);
-        // Default to the first department (lowest displayOrder, set in admin)
-        if (depts.length > 0 && activeDeptId == null) {
-          setActiveDeptId(depts[0].id);
-        }
       })
       .catch((err) => {
         console.error('Error fetching team data:', err);
@@ -71,24 +66,21 @@ const HomePage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const activeDepartment = useMemo(
-    () => departments.find((d) => d.id === activeDeptId) || null,
-    [departments, activeDeptId]
-  );
-
-  const activeMembers = useMemo(() => {
-    if (!activeDeptId) return [];
+  // "Consiliu Director" members — the only ones shown on the home page board
+  const boardMembers = useMemo(() => {
+    const cd = departments.find(
+      (d) => d.name.toLowerCase() === 'consiliu director'
+    );
+    if (!cd) return [];
     return allMembers
-      .filter((m) => (m.departments || []).some((d) => d.id === activeDeptId))
+      .filter((m) => (m.departments || []).some((d) => d.id === cd.id))
       .sort((a, b) => (a.displayOrder ?? 0) - (b.displayOrder ?? 0) || a.id - b.id);
-  }, [allMembers, activeDeptId]);
+  }, [departments, allMembers]);
 
-  // Volunteer carousel within the active department
+  // Board carousel (Consiliu Director members)
   const [volIdx, setVolIdx] = useState(0);
   const [needsNav, setNeedsNav] = useState(false);
   const volViewportRef = useRef(null);
-
-  useEffect(() => { setVolIdx(0); }, [activeDeptId]);
 
   // Preload every member photo into the browser cache as soon as the
   // team data arrives — so switching departments shows images instantly.
@@ -131,20 +123,10 @@ const HomePage = () => {
       clearTimeout(timer);
       window.removeEventListener('resize', check);
     };
-  }, [activeMembers]);
+  }, [boardMembers]);
 
   const goVol = (delta) => {
-    setVolIdx((i) => Math.max(0, Math.min(activeMembers.length - 1, i + delta)));
-  };
-
-  const applyToDepartment = (deptName) => {
-    setInterestedDepartments((prev) =>
-      prev.includes(deptName) ? prev : [...prev, deptName]
-    );
-    if (typeof window !== 'undefined') {
-      const el = document.getElementById('volunteer');
-      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
+    setVolIdx((i) => Math.max(0, Math.min(boardMembers.length - 1, i + delta)));
   };
 
   const toggleInterestedDepartment = (deptName) => {
@@ -353,9 +335,9 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* Departments Carousel */}
-      {departments.length > 0 && (
-        <section className="departments-section section bg-gray">
+      {/* Consiliu Director board */}
+      {boardMembers.length > 0 && (
+        <section className="board-section section">
           <div className="container">
             <motion.div
               className="board-header"
@@ -364,25 +346,10 @@ const HomePage = () => {
               viewport={{ once: true, amount: 0.3 }}
               variants={fadeInUp}
             >
-              <h2 className="section-title">{t('home.departments.title')}</h2>
-              <p className="section-subtitle">{t('home.departments.subtitle')}</p>
+              <h2 className="section-title">{t('home.board.title')}</h2>
+              <p className="section-subtitle">{t('home.board.subtitle')}</p>
             </motion.div>
 
-            {/* Tab strip */}
-            <div className="departments-tabs">
-              {departments.map((d) => (
-                <button
-                  key={d.id}
-                  type="button"
-                  className={`department-tab ${d.id === activeDeptId ? 'active' : ''}`}
-                  onClick={() => setActiveDeptId(d.id)}
-                >
-                  {d.name}
-                </button>
-              ))}
-            </div>
-
-            {/* Department panel + volunteer carousel */}
             <div className="departments-carousel">
               {needsNav && (
                 <button
@@ -390,89 +357,56 @@ const HomePage = () => {
                   className="carousel-arrow carousel-arrow--left"
                   onClick={() => goVol(-1)}
                   disabled={volIdx === 0}
-                  aria-label={t('home.departments.previous')}
+                  aria-label="Anterior"
                 >
                   ‹
                 </button>
               )}
 
               <div className="carousel-stage">
-                <AnimatePresence mode="wait">
-                  {activeDepartment && (
-                    <motion.div
-                      key={activeDepartment.id}
-                      className="department-panel"
-                      initial={{ opacity: 0, x: 30 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: -30 }}
-                      transition={{ duration: 0.35, ease: 'easeOut' }}
-                    >
-                      <div className="department-panel-header">
-                        <h3 className="department-name">{activeDepartment.name}</h3>
-                        {activeDepartment.description && (
-                          <p className="department-description">{activeDepartment.description}</p>
-                        )}
-                        <button
-                          type="button"
-                          className="btn btn-primary department-apply-btn"
-                          onClick={() => applyToDepartment(activeDepartment.name)}
-                        >
-                          {t('home.departments.apply')}
-                        </button>
-                      </div>
-
-                      {activeMembers.length === 0 ? (
-                        <p className="department-empty">{t('home.departments.empty')}</p>
-                      ) : (
-                        <>
-                          <div ref={volViewportRef} className="vol-carousel-viewport">
-                            <div className="board-grid">
-                              {activeMembers.map((member) => {
-                                const fullName = `${member.firstName} ${member.lastName}`.trim();
-                                const initial = (member.firstName || member.lastName || '?').charAt(0);
-                                return (
-                                  <div key={member.id} className="board-card">
-                                    <div className="board-image-wrapper">
-                                      <img
-                                        src={member.photoPath ? `${BACKEND_URL}${member.photoPath}` : placeholderAvatar(initial)}
-                                        alt={fullName}
-                                        onError={(e) => { e.target.src = placeholderAvatar(initial); }}
-                                      />
-                                    </div>
-                                    <div className="board-info">
-                                      <h3 className="board-name">{fullName}</h3>
-                                      {member.role && <p className="board-position">{member.role}</p>}
-                                      {member.bio && <p className="board-bio">{member.bio}</p>}
-                                      {member.email && (
-                                        <a className="board-email" href={`mailto:${member.email}`}>
-                                          {member.email}
-                                        </a>
-                                      )}
-                                    </div>
-                                  </div>
-                                );
-                              })}
-                            </div>
+                <div ref={volViewportRef} className="vol-carousel-viewport">
+                  <div className="board-grid">
+                    {boardMembers.map((member) => {
+                      const fullName = `${member.firstName} ${member.lastName}`.trim();
+                      const initial = (member.firstName || member.lastName || '?').charAt(0);
+                      return (
+                        <div key={member.id} className="board-card">
+                          <div className="board-image-wrapper">
+                            <img
+                              src={member.photoPath ? `${BACKEND_URL}${member.photoPath}` : placeholderAvatar(initial)}
+                              alt={fullName}
+                              onError={(e) => { e.target.src = placeholderAvatar(initial); }}
+                            />
                           </div>
+                          <div className="board-info">
+                            <h3 className="board-name">{fullName}</h3>
+                            {member.role && <p className="board-position">{member.role}</p>}
+                            {member.bio && <p className="board-bio">{member.bio}</p>}
+                            {member.email && (
+                              <a className="board-email" href={`mailto:${member.email}`}>
+                                {member.email}
+                              </a>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
 
-                          {needsNav && activeMembers.length > 1 && (
-                            <div className="departments-dots">
-                              {activeMembers.map((m, i) => (
-                                <button
-                                  key={m.id}
-                                  type="button"
-                                  className={`carousel-dot ${i === volIdx ? 'active' : ''}`}
-                                  onClick={() => setVolIdx(i)}
-                                  aria-label={`${m.firstName} ${m.lastName}`}
-                                />
-                              ))}
-                            </div>
-                          )}
-                        </>
-                      )}
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+                {needsNav && boardMembers.length > 1 && (
+                  <div className="departments-dots">
+                    {boardMembers.map((m, i) => (
+                      <button
+                        key={m.id}
+                        type="button"
+                        className={`carousel-dot ${i === volIdx ? 'active' : ''}`}
+                        onClick={() => setVolIdx(i)}
+                        aria-label={`${m.firstName} ${m.lastName}`}
+                      />
+                    ))}
+                  </div>
+                )}
               </div>
 
               {needsNav && (
@@ -480,8 +414,8 @@ const HomePage = () => {
                   type="button"
                   className="carousel-arrow carousel-arrow--right"
                   onClick={() => goVol(1)}
-                  disabled={volIdx === activeMembers.length - 1}
-                  aria-label={t('home.departments.next')}
+                  disabled={volIdx === boardMembers.length - 1}
+                  aria-label="Următor"
                 >
                   ›
                 </button>
