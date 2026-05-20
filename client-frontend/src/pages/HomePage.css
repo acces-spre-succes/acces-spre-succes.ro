@@ -419,6 +419,23 @@
   transform: scale(1.25);
 }
 
+/* Dots row — sits outside carousel-stage so it's never clipped */
+.board-dots-row {
+  width: 100%;
+  /* spans the full width of departments-carousel (between the arrows) */
+  grid-column: 1 / -1;
+}
+
+/* On mobile, board-dots-row needs to break out of the flex row */
+@media (max-width: 600px) {
+  .departments-carousel {
+    flex-wrap: wrap;
+  }
+  .board-dots-row {
+    order: 10; /* push below arrows and stage */
+  }
+}
+
 @media (max-width: 600px) {
   /* hide nav arrows on mobile — swipe instead */
   .carousel-arrow {
@@ -429,18 +446,21 @@
    * Make the viewport itself the flex scroll container.
    * board-grid becomes display:contents so its children
    * participate directly in the viewport's flex, letting
-   * flex: 0 0 100% mean "100% of the scroll container"
-   * instead of "100% of the nested grid".
+   * flex: 0 0 calc(100% - 2rem) mean "card width with side margins"
+   * so the border-radius corners are clearly visible.
    */
   .vol-carousel-viewport {
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
-    gap: 0;
+    gap: 1rem;
     overflow-x: auto;
     scroll-snap-type: x mandatory;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
+    /* Side padding so first/last card float with visible corners */
+    padding: 0.75rem;
+    scroll-padding-left: 0.75rem;
   }
   .vol-carousel-viewport::-webkit-scrollbar { display: none; }
 
@@ -449,12 +469,12 @@
     display: contents;
   }
 
-  /* each card = exactly the scroll container width */
+  /* Each card slightly narrower than the viewport — corners breathe */
   .board-card {
     scroll-snap-align: start;
-    flex: 0 0 100%;
-    min-width: 100%;
-    max-width: 100%;
+    flex: 0 0 calc(100% - 1.5rem);
+    min-width: calc(100% - 1.5rem);
+    max-width: calc(100% - 1.5rem);
   }
 
   .department-panel {

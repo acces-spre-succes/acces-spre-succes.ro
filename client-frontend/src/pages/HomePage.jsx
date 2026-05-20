@@ -414,8 +414,11 @@ const HomePage = () => {
                     })}
                   </div>
                 </div>
+              </div>
 
-                {needsNav && boardMembers.length > 1 && (
+              {/* Dots live OUTSIDE carousel-stage so overflow:hidden never clips them */}
+              {needsNav && boardMembers.length > 1 && (
+                <div className="board-dots-row">
                   <div className="departments-dots">
                     {boardMembers.map((m, i) => (
                       <button
@@ -427,8 +430,8 @@ const HomePage = () => {
                       />
                     ))}
                   </div>
-                )}
-              </div>
+                </div>
+              )}
 
               {needsNav && (
                 <button

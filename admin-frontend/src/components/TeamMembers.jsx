@@ -166,13 +166,17 @@ export default function TeamMembers() {
         const [moved] = list.splice(from, 1);
         list.splice(to, 0, moved);
 
-        // Assign new displayOrder values (0-based) and update full members array
+        // Assign new displayOrder values (0-based)
         const updated = list.map((m, i) => ({ ...m, displayOrder: i }));
-        // Merge back into the full members array
+
+        // Update the full members array: apply new orders then re-sort
+        // so the rendered list immediately reflects the new sequence.
         setMembers((prev) => {
-            const map = {};
-            updated.forEach((m) => { map[m.id] = m; });
-            return prev.map((m) => map[m.id] ?? m);
+            const orderMap = {};
+            updated.forEach((m) => { orderMap[m.id] = m.displayOrder; });
+            return prev
+                .map((m) => orderMap[m.id] !== undefined ? { ...m, displayOrder: orderMap[m.id] } : m)
+                .sort((a, b) => (a.displayOrder ?? 0) - (b.displayOrder ?? 0) || a.id - b.id);
         });
 
         // Persist to server
