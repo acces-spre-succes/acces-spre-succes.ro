@@ -68,6 +68,11 @@
   margin: 0.25rem 0 0.75rem 0;
   color: var(--gray-600);
   font-size: 0.95rem;
+  /* Cap bios at 4 lines so cards stay visually balanced */
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .team-email {
@@ -75,7 +80,10 @@
   color: var(--primary);
   text-decoration: none;
   font-weight: 500;
-  word-break: break-all;
+  font-size: 0.85rem;
+  /* Break at natural points (@ . -) rather than at every character */
+  overflow-wrap: break-word;
+  word-break: break-word;
   border-top: 1px solid var(--gray-100);
   padding-top: 0.75rem;
 }

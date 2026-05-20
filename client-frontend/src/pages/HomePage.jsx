@@ -80,6 +80,8 @@ const HomePage = () => {
   const [volIdx, setVolIdx] = useState(0);
   const [needsNav, setNeedsNav] = useState(false);
   const volViewportRef = useRef(null);
+  // Prevents the scroll listener from fighting with programmatic scrolls
+  const scrollingProgrammatically = useRef(false);
 
   // Preload every member photo into the browser cache as soon as the
   // team data arrives — so switching departments shows images instantly.
@@ -92,15 +94,35 @@ const HomePage = () => {
     });
   }, [allMembers]);
 
-  // Scroll viewport to the active card (desktop JS-driven scroll)
+  // Scroll viewport to the active card (desktop JS-driven scroll + dots/arrows)
   useEffect(() => {
     const viewport = volViewportRef.current;
     if (!viewport) return;
     const card = viewport.querySelector('.board-card');
     if (!card) return;
     const gap = parseFloat(getComputedStyle(viewport).gap) || 0;
+    scrollingProgrammatically.current = true;
     viewport.scrollTo({ left: volIdx * (card.offsetWidth + gap), behavior: 'smooth' });
+    // Clear the flag after the smooth scroll settles (~500ms)
+    const t = setTimeout(() => { scrollingProgrammatically.current = false; }, 600);
+    return () => clearTimeout(t);
   }, [volIdx]);
+
+  // Sync dots with the user's native swipe on mobile (scroll-snap)
+  useEffect(() => {
+    const viewport = volViewportRef.current;
+    if (!viewport) return;
+    const onScroll = () => {
+      if (scrollingProgrammatically.current) return;
+      const card = viewport.querySelector('.board-card');
+      if (!card) return;
+      const gap = parseFloat(getComputedStyle(viewport).gap) || 0;
+      const step = card.offsetWidth + gap;
+      if (step > 0) setVolIdx(Math.round(viewport.scrollLeft / step));
+    };
+    viewport.addEventListener('scroll', onScroll, { passive: true });
+    return () => viewport.removeEventListener('scroll', onScroll);
+  }, [boardMembers]);
 
   // Determine whether navigation (arrows/dots) is needed.
   // Reset immediately on dept change, then re-check after the
