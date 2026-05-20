@@ -371,7 +371,7 @@ const HomePage = () => {
               <p className="section-subtitle">{t('home.board.subtitle')}</p>
             </motion.div>
 
-            <div className="departments-carousel">
+            <div className={`departments-carousel${needsNav ? '' : ' board-carousel--open'}`}>
               {needsNav && (
                 <button
                   type="button"

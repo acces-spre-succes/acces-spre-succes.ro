@@ -145,6 +145,8 @@ export default function TeamMembers() {
     const handleDragStart = (e, idx) => {
         dragIdx.current = idx;
         e.dataTransfer.effectAllowed = "move";
+        // Required for Firefox to initiate the drag
+        e.dataTransfer.setData("text/plain", String(idx));
     };
 
     const handleDragEnter = (idx) => {
@@ -347,7 +349,8 @@ export default function TeamMembers() {
                                     <img
                                         src={`${BACKEND_URL}${m.photoPath}`}
                                         alt={`${m.firstName} ${m.lastName}`}
-                                        style={{ width: "80px", height: "80px", objectFit: "cover", borderRadius: "8px", flexShrink: 0 }}
+                                        draggable={false}
+                                        style={{ width: "80px", height: "80px", objectFit: "cover", borderRadius: "8px", flexShrink: 0, pointerEvents: "none" }}
                                     />
                                 )}
                                 <div style={{ flex: 1 }}>
