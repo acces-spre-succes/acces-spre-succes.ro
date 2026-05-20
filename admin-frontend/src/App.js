@@ -40,7 +40,16 @@ export default function App() {
     };
 
     if (authState === "checking") {
-        return <div className="login-container"><p>Se verifica sesiunea...</p></div>;
+        return (
+            <div className="login-container">
+                <div className="login-card" style={{ textAlign: "center", padding: "3rem 2rem" }}>
+                    <div className="session-spinner" />
+                    <p style={{ marginTop: "1.5rem", color: "var(--color-text-muted)", fontWeight: 500 }}>
+                        Se verifică sesiunea…
+                    </p>
+                </div>
+            </div>
+        );
     }
 
     if (authState !== "loggedIn") {
