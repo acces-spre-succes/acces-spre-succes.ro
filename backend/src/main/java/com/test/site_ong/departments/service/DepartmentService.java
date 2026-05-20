@@ -25,20 +25,26 @@ public class DepartmentService {
         return repo.findById(id).orElse(null);
     }
 
-    public Department create(String name, String description, Integer displayOrder) {
+    public Department create(String name, String description, Integer displayOrder,
+                             Boolean isMaster, Long presidentId) {
         Department d = new Department();
         d.setName(name.trim());
         d.setDescription(description);
         d.setDisplayOrder(displayOrder == null ? 0 : displayOrder);
+        d.setIsMaster(Boolean.TRUE.equals(isMaster));
+        d.setPresidentId(presidentId);
         return repo.save(d);
     }
 
-    public Department update(Long id, String name, String description, Integer displayOrder) {
+    public Department update(Long id, String name, String description, Integer displayOrder,
+                             Boolean isMaster, Long presidentId) {
         Department d = repo.findById(id).orElse(null);
         if (d == null) return null;
         if (name != null && !name.isBlank()) d.setName(name.trim());
         d.setDescription(description);
         if (displayOrder != null) d.setDisplayOrder(displayOrder);
+        if (isMaster != null) d.setIsMaster(isMaster);
+        d.setPresidentId(presidentId);
         return repo.save(d);
     }
 

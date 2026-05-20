@@ -30,4 +30,19 @@ public class Department {
     /** Lower comes first on the public carousel; ties broken by id. */
     @Column(name = "display_order", nullable = false)
     private Integer displayOrder = 0;
+
+    /**
+     * When true this is the "master" (governing-board) department.
+     * It is displayed on the home screen board section and excluded
+     * from the public /departamente listing.
+     */
+    @Column(name = "is_master", nullable = false, columnDefinition = "boolean default false")
+    private Boolean isMaster = false;
+
+    /**
+     * Optional: the id of the TeamMember who is president / main contact
+     * for this department. Used on the /departamente page contact card.
+     */
+    @Column(name = "president_id")
+    private Long presidentId;
 }

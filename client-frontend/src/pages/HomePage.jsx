@@ -66,14 +66,13 @@ const HomePage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // "Consiliu Director" members — the only ones shown on the home page board
+  // Master department members — the only ones shown on the home page board.
+  // The "master" flag is set in the admin panel on the department itself.
   const boardMembers = useMemo(() => {
-    const cd = departments.find(
-      (d) => d.name.toLowerCase() === 'consiliu director'
-    );
-    if (!cd) return [];
+    const master = departments.find((d) => d.isMaster === true);
+    if (!master) return [];
     return allMembers
-      .filter((m) => (m.departments || []).some((d) => d.id === cd.id))
+      .filter((m) => (m.departments || []).some((d) => d.id === master.id))
       .sort((a, b) => (a.displayOrder ?? 0) - (b.displayOrder ?? 0) || a.id - b.id);
   }, [departments, allMembers]);
 
@@ -365,7 +364,7 @@ const HomePage = () => {
 
               <div className="carousel-stage">
                 <div ref={volViewportRef} className="vol-carousel-viewport">
-                  <div className="board-grid">
+                  <div className={`board-grid${needsNav ? '' : ' board-grid--centered'}`}>
                     {boardMembers.map((member) => {
                       const fullName = `${member.firstName} ${member.lastName}`.trim();
                       const initial = (member.firstName || member.lastName || '?').charAt(0);

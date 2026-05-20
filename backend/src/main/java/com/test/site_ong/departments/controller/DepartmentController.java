@@ -40,12 +40,16 @@ public class DepartmentController {
         if (body.getName() == null || body.getName().isBlank()) {
             return ResponseEntity.badRequest().build();
         }
-        return ResponseEntity.ok(service.create(body.getName(), body.getDescription(), body.getDisplayOrder()));
+        return ResponseEntity.ok(service.create(
+                body.getName(), body.getDescription(), body.getDisplayOrder(),
+                body.getIsMaster(), body.getPresidentId()));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Department> update(@PathVariable Long id, @RequestBody Department body) {
-        Department d = service.update(id, body.getName(), body.getDescription(), body.getDisplayOrder());
+        Department d = service.update(
+                id, body.getName(), body.getDescription(), body.getDisplayOrder(),
+                body.getIsMaster(), body.getPresidentId());
         return d == null ? ResponseEntity.notFound().build() : ResponseEntity.ok(d);
     }
 

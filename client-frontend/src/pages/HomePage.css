@@ -169,6 +169,11 @@
   gap: 1.5rem;
 }
 
+/* When all cards fit in the viewport, center them instead of left-aligning */
+.board-grid--centered {
+  justify-content: center;
+}
+
 .board-card {
   flex: 0 0 250px;
   background: var(--white);

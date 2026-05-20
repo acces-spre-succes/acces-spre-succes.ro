@@ -39,22 +39,29 @@ const DepartmentsPage = () => {
       .finally(() => setLoading(false));
   }, [t]);
 
-  // For each department, find sorted members and pick the "president" contact
+  // Exclude master departments (shown on home screen, not here)
+  const visibleDepartments = useMemo(
+    () => departments.filter((d) => !d.isMaster),
+    [departments]
+  );
+
+  // For each department, find sorted members and pick the president contact.
+  // Priority: explicitly assigned presidentId → role regex → first by displayOrder.
   const presidentByDept = useMemo(() => {
     const map = {};
-    departments.forEach((d) => {
+    visibleDepartments.forEach((d) => {
       const members = allMembers
         .filter((m) => (m.departments || []).some((md) => md.id === d.id))
         .sort((a, b) => (a.displayOrder ?? 0) - (b.displayOrder ?? 0) || a.id - b.id);
-      // Prefer a member whose role contains "presedinte" / "președinte"
       const president =
+        (d.presidentId != null && allMembers.find((m) => m.id === d.presidentId)) ||
         members.find((m) => m.role && /pre[șs]edinte/i.test(m.role)) ||
         members[0] ||
         null;
       map[d.id] = { members, president };
     });
     return map;
-  }, [departments, allMembers]);
+  }, [visibleDepartments, allMembers]);
 
   if (loading) {
     return (
@@ -89,7 +96,7 @@ const DepartmentsPage = () => {
 
       <section className="depts-list section">
         <div className="container">
-          {departments.length === 0 ? (
+          {visibleDepartments.length === 0 ? (
             <motion.p
               className="depts-empty"
               initial="hidden"
@@ -99,7 +106,7 @@ const DepartmentsPage = () => {
               {t('departmentsPage.empty')}
             </motion.p>
           ) : (
-            departments.map((dept, i) => {
+            visibleDepartments.map((dept, i) => {
               const { president } = presidentByDept[dept.id] || {};
               const fullName = president
                 ? `${president.firstName} ${president.lastName}`.trim()

@@ -2,16 +2,21 @@ import React, { useEffect, useState } from "react";
 import { API_BASE_URL } from "../config";
 import { authFetch } from "../services/auth";
 
-const emptyForm = { name: "", description: "", displayOrder: "" };
+const emptyForm = { name: "", description: "", displayOrder: "", isMaster: false, presidentId: "" };
 
 export default function Departments() {
     const [departments, setDepartments] = useState([]);
+    const [allMembers, setAllMembers] = useState([]);
     const [form, setForm] = useState(emptyForm);
     const [editingId, setEditingId] = useState(null);
     const [busy, setBusy] = useState(false);
 
     useEffect(() => {
         load();
+        authFetch(`${API_BASE_URL}/team`)
+            .then((res) => res.json())
+            .then((data) => setAllMembers(data || []))
+            .catch((err) => console.error("Eroare la preluare membri:", err));
     }, []);
 
     const load = () => {
@@ -27,6 +32,8 @@ export default function Departments() {
             name: d.name || "",
             description: d.description || "",
             displayOrder: d.displayOrder ?? "",
+            isMaster: d.isMaster || false,
+            presidentId: d.presidentId != null ? String(d.presidentId) : "",
         });
     };
 
@@ -46,6 +53,8 @@ export default function Departments() {
                 name: form.name.trim(),
                 description: form.description || null,
                 displayOrder: form.displayOrder === "" ? 0 : Number(form.displayOrder),
+                isMaster: form.isMaster,
+                presidentId: form.presidentId !== "" ? Number(form.presidentId) : null,
             };
             const url = editingId
                 ? `${API_BASE_URL}/departments/${editingId}`
@@ -79,6 +88,12 @@ export default function Departments() {
         }
     };
 
+    // Build a lookup map: memberId → full name
+    const memberName = (id) => {
+        const m = allMembers.find((x) => x.id === Number(id));
+        return m ? `${m.firstName} ${m.lastName}`.trim() : `#${id}`;
+    };
+
     return (
         <div className="content-section active">
             <h2>{editingId ? "Editează departament" : "Adaugă departament"}</h2>
@@ -97,11 +112,48 @@ export default function Departments() {
                 />
                 <input
                     type="number"
-                    placeholder="Ordine afișare (0 = primul în carusel)"
+                    placeholder="Ordine afișare (0 = primul)"
                     value={form.displayOrder}
                     onChange={(e) => setForm({ ...form, displayOrder: e.target.value })}
                 />
-                <div style={{ display: "flex", gap: "8px" }}>
+
+                {/* President picker */}
+                <label style={{ fontWeight: 600, marginTop: "4px" }}>
+                    Persoană de contact / Președinte departament
+                </label>
+                <select
+                    value={form.presidentId}
+                    onChange={(e) => setForm({ ...form, presidentId: e.target.value })}
+                    style={{ padding: "10px", borderRadius: "6px", border: "1px solid #ddd", fontSize: "14px" }}
+                >
+                    <option value="">— Niciun contact specificat —</option>
+                    {allMembers
+                        .slice()
+                        .sort((a, b) => `${a.firstName} ${a.lastName}`.localeCompare(`${b.firstName} ${b.lastName}`))
+                        .map((m) => (
+                            <option key={m.id} value={m.id}>
+                                {m.firstName} {m.lastName}{m.role ? ` — ${m.role}` : ""}
+                            </option>
+                        ))}
+                </select>
+
+                {/* isMaster toggle */}
+                <label style={{ display: "flex", alignItems: "center", gap: "10px", cursor: "pointer", marginTop: "8px" }}>
+                    <input
+                        type="checkbox"
+                        checked={form.isMaster}
+                        onChange={(e) => setForm({ ...form, isMaster: e.target.checked })}
+                        style={{ width: "18px", height: "18px", accentColor: "#1d4771", cursor: "pointer" }}
+                    />
+                    <span>
+                        <strong>Departament principal (home screen)</strong>
+                        <span style={{ display: "block", fontSize: "12px", color: "#666" }}>
+                            Dacă este bifat, membrii acestui departament apar în secțiunea "Consiliu" de pe pagina principală și nu vor fi afișați pe pagina /departamente.
+                        </span>
+                    </span>
+                </label>
+
+                <div style={{ display: "flex", gap: "8px", marginTop: "8px" }}>
                     <button className="button-add" onClick={handleSubmit} disabled={busy}>
                         {editingId ? "Salvează modificările" : "Adaugă departament"}
                     </button>
@@ -114,9 +166,6 @@ export default function Departments() {
             </div>
 
             <h2 style={{ marginTop: "30px" }}>Departamente existente</h2>
-            <p style={{ color: "#666", marginBottom: "12px" }}>
-                Primul din listă (ordonat după "Ordine afișare") este cel afișat implicit pe homepage când vizitatorul intră pe site.
-            </p>
             <div className="articles-list">
                 {departments.length === 0 ? (
                     <p>Nu există departamente. Adaugă primul de mai sus.</p>
@@ -125,10 +174,25 @@ export default function Departments() {
                         <div key={d.id} className="article-card">
                             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "16px" }}>
                                 <div style={{ flex: 1 }}>
-                                    <h3>{d.name}</h3>
-                                    {d.description && <p style={{ color: "#555" }}>{d.description}</p>}
-                                    <p style={{ fontSize: "12px", color: "#888", marginTop: "8px" }}>
+                                    <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
+                                        <h3 style={{ margin: 0 }}>{d.name}</h3>
+                                        {d.isMaster && (
+                                            <span style={{
+                                                background: "#1d4771", color: "#fff",
+                                                fontSize: "11px", fontWeight: 700,
+                                                padding: "2px 8px", borderRadius: "999px",
+                                                letterSpacing: "0.5px"
+                                            }}>
+                                                HOME
+                                            </span>
+                                        )}
+                                    </div>
+                                    {d.description && <p style={{ color: "#555", marginTop: "6px" }}>{d.description}</p>}
+                                    <p style={{ fontSize: "12px", color: "#888", marginTop: "6px" }}>
                                         Ordine afișare: <strong>{d.displayOrder ?? 0}</strong>
+                                        {d.presidentId && (
+                                            <> &nbsp;·&nbsp; Contact: <strong>{memberName(d.presidentId)}</strong></>
+                                        )}
                                     </p>
                                 </div>
                             </div>
