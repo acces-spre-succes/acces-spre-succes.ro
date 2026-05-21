@@ -317,57 +317,67 @@
 }
 
 .impact-section {
-  background: var(--gray-50);
-  padding: 3rem;
-  border-radius: 1rem;
+  border-top: 2px solid var(--gray-100);
+  padding-top: 3rem;
+  margin-top: 1rem;
 }
 
 .impact-title {
-  font-size: 2rem;
-  font-weight: 700;
-  color: var(--primary);
-  text-align: center;
-  margin-bottom: 2.5rem;
-}
-
-.impact-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 2rem;
-}
-
-.impact-card {
-  background: var(--white);
-  padding: 2rem;
-  border-radius: 1rem;
-  text-align: center;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
-  transition: all 0.3s ease;
-}
-
-.impact-card:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
-}
-
-.impact-icon {
-  width: 60px;
-  height: 60px;
-  margin: 0 auto 1rem;
-  color: var(--secondary);
-}
-
-.impact-card h4 {
-  font-size: 1.3rem;
-  font-weight: 700;
+  font-size: 1.75rem;
+  font-weight: 800;
   color: var(--primary);
   margin-bottom: 0.75rem;
 }
 
-.impact-card p {
+.impact-intro {
   font-size: 1rem;
-  color: var(--gray-700);
-  line-height: 1.6;
+  color: var(--gray-600);
+  margin-bottom: 2.5rem;
+  line-height: 1.65;
+}
+
+.impact-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.impact-item {
+  display: flex;
+  gap: 1.75rem;
+  align-items: flex-start;
+  padding: 1.75rem 0;
+  border-bottom: 1px solid var(--gray-100);
+}
+
+.impact-item:last-child {
+  border-bottom: none;
+}
+
+.impact-item__num {
+  font-size: 2rem;
+  font-weight: 900;
+  color: var(--secondary);
+  line-height: 1;
+  flex-shrink: 0;
+  width: 2.5rem;
+  padding-top: 0.15rem;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -1px;
+}
+
+.impact-item__body h4 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--primary);
+  margin: 0 0 0.4rem 0;
+}
+
+.impact-item__body p {
+  font-size: 0.95rem;
+  color: var(--gray-600);
+  line-height: 1.65;
+  margin: 0;
 }
 
 /* Responsive Design */
@@ -397,13 +407,6 @@
     align-items: center;
   }
 
-  .impact-section {
-    padding: 2rem;
-  }
-
-  .impact-grid {
-    grid-template-columns: 1fr;
-  }
 }
 
 @media (max-width: 480px) {
@@ -411,9 +414,12 @@
     font-size: 1.5rem;
   }
 
-  .methods-title,
-  .impact-title {
+  .methods-title {
     font-size: 1.5rem;
+  }
+
+  .impact-title {
+    font-size: 1.4rem;
   }
 
   .contact-info {

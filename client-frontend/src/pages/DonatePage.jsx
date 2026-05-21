@@ -194,67 +194,28 @@ const DonatePage = () => {
 
             <motion.div className="impact-section" variants={fadeInUp}>
               <h3 className="impact-title">{t('donate.impactTitle')}</h3>
-              <div className="impact-grid">
-                <div className="impact-card">
-                  <div className="impact-icon">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="40"
-                      height="40"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
-                      <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
-                    </svg>
+              <p className="impact-intro">{t('donate.impactIntro')}</p>
+              <div className="impact-list">
+                <div className="impact-item">
+                  <span className="impact-item__num">01</span>
+                  <div className="impact-item__body">
+                    <h4>{t('donate.impactEducationTitle')}</h4>
+                    <p>{t('donate.impactEducationText')}</p>
                   </div>
-                  <h4>{t('donate.impactEducationTitle')}</h4>
-                  <p>{t('donate.impactEducationText')}</p>
                 </div>
-                <div className="impact-card">
-                  <div className="impact-icon">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="40"
-                      height="40"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                      <circle cx="9" cy="7" r="4"></circle>
-                      <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                      <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-                    </svg>
+                <div className="impact-item">
+                  <span className="impact-item__num">02</span>
+                  <div className="impact-item__body">
+                    <h4>{t('donate.impactMentoringTitle')}</h4>
+                    <p>{t('donate.impactMentoringText')}</p>
                   </div>
-                  <h4>{t('donate.impactMentoringTitle')}</h4>
-                  <p>{t('donate.impactMentoringText')}</p>
                 </div>
-                <div className="impact-card">
-                  <div className="impact-icon">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="40"
-                      height="40"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-                    </svg>
+                <div className="impact-item">
+                  <span className="impact-item__num">03</span>
+                  <div className="impact-item__body">
+                    <h4>{t('donate.impactFutureTitle')}</h4>
+                    <p>{t('donate.impactFutureText')}</p>
                   </div>
-                  <h4>{t('donate.impactFutureTitle')}</h4>
-                  <p>{t('donate.impactFutureText')}</p>
                 </div>
               </div>
             </motion.div>

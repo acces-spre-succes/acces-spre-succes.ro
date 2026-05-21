@@ -279,7 +279,7 @@ const HomePage = () => {
               <span className="impact-stat-label">{t('home.scroll.stats.children')}</span>
             </div>
             <div className="impact-stat">
-              <span className="impact-stat-number">8</span>
+              <span className="impact-stat-number">4</span>
               <span className="impact-stat-label">{t('home.scroll.stats.departments')}</span>
             </div>
             <div className="impact-stat">
