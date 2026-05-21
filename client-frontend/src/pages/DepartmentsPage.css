@@ -13,6 +13,18 @@
   padding: 3rem 1rem;
 }
 
+.depts-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.25rem;
+  min-height: 40vh;
+  text-align: center;
+  color: var(--gray-500);
+  font-size: 1rem;
+}
+
 /* Individual department block */
 .dept-block {
   margin-bottom: 5rem;

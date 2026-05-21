@@ -2,12 +2,17 @@ package com.test.site_ong.team.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.test.site_ong.departments.model.Department;
+import com.test.site_ong.upcoming_project.model.UpcomingProject;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.util.HashSet;
+import java.util.List;
+import java.util.ArrayList;
 import java.util.Set;
 
 /**
@@ -17,6 +22,8 @@ import java.util.Set;
  */
 @Entity
 @Data
+@EqualsAndHashCode(exclude = "projects")
+@ToString(exclude = "projects")
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "team_members")
@@ -74,4 +81,25 @@ public class TeamMember {
     )
     @JsonIgnoreProperties("members")
     private Set<Department> departments = new HashSet<>();
+
+    /**
+     * Soft-delete flag. Archived members are hidden from the public team page
+     * but remain in the DB so their project assignments stay intact.
+     */
+    @Column(nullable = false, columnDefinition = "boolean default false")
+    private Boolean archived = false;
+
+    /**
+     * Projects (upcoming) this member has participated in.
+     * Owned on the UpcomingProject side; exposed here as read-only
+     * so the public API can surface "events they volunteered in."
+     */
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "project_volunteers",
+            joinColumns = @JoinColumn(name = "team_member_id"),
+            inverseJoinColumns = @JoinColumn(name = "project_id")
+    )
+    @JsonIgnoreProperties("volunteers")
+    private List<UpcomingProject> projects = new ArrayList<>();
 }

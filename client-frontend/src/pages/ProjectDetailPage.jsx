@@ -145,6 +145,33 @@ const ProjectDetailPage = () => {
               </motion.div>
             )}
 
+            {/* ── Volunteers section ── */}
+            {project.volunteers && project.volunteers.length > 0 && (
+              <motion.div className="detail-volunteers" variants={fadeIn}>
+                <h2 className="detail-volunteers__title">👥 {t('project.volunteers')}</h2>
+                <div className="detail-volunteers__grid">
+                  {project.volunteers.map((v) => (
+                    <div key={v.id} className="detail-volunteer-chip">
+                      {v.photoPath && (
+                        <img
+                          src={`${BACKEND_URL}${v.photoPath}`}
+                          alt={`${v.firstName} ${v.lastName}`}
+                          className="detail-volunteer-chip__photo"
+                          onError={(e) => { e.target.style.display = 'none'; }}
+                        />
+                      )}
+                      <span className="detail-volunteer-chip__name">
+                        {v.firstName} {v.lastName}
+                      </span>
+                      {v.role && (
+                        <span className="detail-volunteer-chip__role">{v.role}</span>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+
             <motion.div className="detail-actions" variants={fadeIn}>
               <button className="btn btn-primary" onClick={() => navigate('/donate')}>
                 {t('common.support')}

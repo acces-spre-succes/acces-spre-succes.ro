@@ -63,23 +63,6 @@ const DepartmentsPage = () => {
     return map;
   }, [visibleDepartments, allMembers]);
 
-  if (loading) {
-    return (
-      <div className="loading-container">
-        <div className="spinner"></div>
-        <p>{t('common.loading')}</p>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="error-container">
-        <p>{error}</p>
-      </div>
-    );
-  }
-
   return (
     <div className="departments-page">
       <motion.section
@@ -96,7 +79,14 @@ const DepartmentsPage = () => {
 
       <section className="depts-list section">
         <div className="container">
-          {visibleDepartments.length === 0 ? (
+          {loading ? (
+            <div className="depts-loading">
+              <div className="spinner"></div>
+              <p>{t('common.loading')}</p>
+            </div>
+          ) : error ? (
+            <p className="depts-empty">{error}</p>
+          ) : visibleDepartments.length === 0 ? (
             <motion.p
               className="depts-empty"
               initial="hidden"

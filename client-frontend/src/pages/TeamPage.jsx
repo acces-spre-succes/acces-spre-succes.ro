@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
 import { API_BASE_URL, BACKEND_URL } from '../config';
 import './TeamPage.css';
@@ -23,13 +23,15 @@ const TeamPage = () => {
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [selectedMember, setSelectedMember] = useState(null);
 
   useEffect(() => {
     const fetchMembers = async () => {
       try {
         setLoading(true);
         const res = await axios.get(`${API_BASE_URL}/team`);
-        setMembers(res.data || []);
+        // Only show non-archived members on the public page
+        setMembers((res.data || []).filter((m) => !m.archived));
         setError(null);
       } catch (err) {
         console.error('Error fetching team:', err);
@@ -41,22 +43,18 @@ const TeamPage = () => {
     fetchMembers();
   }, [t]);
 
-  if (loading) {
-    return (
-      <div className="loading-container">
-        <div className="spinner"></div>
-        <p>{t('common.loading')}</p>
-      </div>
-    );
-  }
+  // Close modal on Escape key
+  useEffect(() => {
+    const onKey = (e) => { if (e.key === 'Escape') setSelectedMember(null); };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, []);
 
-  if (error) {
-    return (
-      <div className="error-container">
-        <p>{error}</p>
-      </div>
-    );
-  }
+  // Prevent body scroll when modal is open
+  useEffect(() => {
+    document.body.style.overflow = selectedMember ? 'hidden' : '';
+    return () => { document.body.style.overflow = ''; };
+  }, [selectedMember]);
 
   return (
     <div className="team-page">
@@ -74,7 +72,16 @@ const TeamPage = () => {
 
       <section className="team-section section">
         <div className="container">
-          {members.length === 0 ? (
+          {loading ? (
+            <div className="team-loading">
+              <div className="spinner"></div>
+              <p>{t('common.loading')}</p>
+            </div>
+          ) : error ? (
+            <div className="team-error">
+              <p>{error}</p>
+            </div>
+          ) : members.length === 0 ? (
             <motion.div
               className="no-team"
               initial="hidden"
@@ -96,14 +103,14 @@ const TeamPage = () => {
                   className="team-card"
                   variants={fadeInUp}
                   whileHover={{ y: -6, transition: { duration: 0.25 } }}
+                  onClick={() => setSelectedMember(m)}
+                  style={{ cursor: 'pointer' }}
                 >
                   <div className="team-photo-wrapper">
                     <img
                       src={m.photoPath ? `${BACKEND_URL}${m.photoPath}` : placeholderAvatar}
                       alt={`${m.firstName} ${m.lastName}`}
-                      onError={(e) => {
-                        e.target.src = placeholderAvatar;
-                      }}
+                      onError={(e) => { e.target.src = placeholderAvatar; }}
                     />
                   </div>
                   <div className="team-content">
@@ -111,7 +118,11 @@ const TeamPage = () => {
                     {m.role && <p className="team-role">{m.role}</p>}
                     {m.bio && <p className="team-bio">{m.bio}</p>}
                     {m.email && (
-                      <a className="team-email" href={`mailto:${m.email}`}>
+                      <a
+                        className="team-email"
+                        href={`mailto:${m.email}`}
+                        onClick={(e) => e.stopPropagation()}
+                      >
                         {m.email}
                       </a>
                     )}
@@ -122,6 +133,92 @@ const TeamPage = () => {
           )}
         </div>
       </section>
+
+      {/* ── Member detail modal ── */}
+      <AnimatePresence>
+        {selectedMember && (
+          <motion.div
+            className="team-modal-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            onClick={() => setSelectedMember(null)}
+          >
+            <motion.div
+              className="team-modal"
+              initial={{ opacity: 0, y: 40, scale: 0.96 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 40, scale: 0.96 }}
+              transition={{ duration: 0.25, ease: 'easeOut' }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button
+                className="team-modal-close"
+                onClick={() => setSelectedMember(null)}
+                aria-label="Închide"
+              >
+                ✕
+              </button>
+
+              <div className="team-modal-header">
+                <img
+                  className="team-modal-photo"
+                  src={
+                    selectedMember.photoPath
+                      ? `${BACKEND_URL}${selectedMember.photoPath}`
+                      : placeholderAvatar
+                  }
+                  alt={`${selectedMember.firstName} ${selectedMember.lastName}`}
+                  onError={(e) => { e.target.src = placeholderAvatar; }}
+                />
+                <div className="team-modal-identity">
+                  <h2 className="team-modal-name">
+                    {selectedMember.firstName} {selectedMember.lastName}
+                  </h2>
+                  {selectedMember.role && (
+                    <p className="team-modal-role">{selectedMember.role}</p>
+                  )}
+                  {selectedMember.email && (
+                    <a className="team-modal-email" href={`mailto:${selectedMember.email}`}>
+                      {selectedMember.email}
+                    </a>
+                  )}
+                  {selectedMember.departments && selectedMember.departments.length > 0 && (
+                    <p className="team-modal-dept">
+                      {selectedMember.departments.map((d) => d.name).join(' · ')}
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              {selectedMember.bio && (
+                <div className="team-modal-bio">
+                  <p>{selectedMember.bio}</p>
+                </div>
+              )}
+
+              {selectedMember.projects && selectedMember.projects.length > 0 && (
+                <div className="team-modal-projects">
+                  <h3 className="team-modal-projects-title">{t('team.modal.projects')}</h3>
+                  <ul className="team-modal-projects-list">
+                    {selectedMember.projects.map((proj) => (
+                      <li key={proj.id}>
+                        <a
+                          href={`/upcoming-projects/${proj.id}`}
+                          className="team-modal-project-link"
+                        >
+                          {proj.title}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

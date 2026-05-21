@@ -82,6 +82,26 @@ public class TeamMemberController {
         return ResponseEntity.noContent().build();
     }
 
+    /** PATCH /api/team/{id}/archive  body: {"archived": true|false} */
+    @PatchMapping("/{id}/archive")
+    public ResponseEntity<TeamMember> setArchived(
+            @PathVariable Long id,
+            @RequestBody java.util.Map<String, Boolean> body) {
+        Boolean archived = body.get("archived");
+        if (archived == null) return ResponseEntity.badRequest().build();
+        TeamMember m = service.setArchived(id, archived);
+        return m == null ? ResponseEntity.notFound().build() : ResponseEntity.ok(m);
+    }
+
+    /** PUT /api/team/{id}/projects  body: [projectId1, projectId2, ...] */
+    @PutMapping("/{id}/projects")
+    public ResponseEntity<TeamMember> setProjects(
+            @PathVariable Long id,
+            @RequestBody List<Long> projectIds) {
+        TeamMember m = service.setProjects(id, projectIds);
+        return m == null ? ResponseEntity.notFound().build() : ResponseEntity.ok(m);
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         return service.delete(id) ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();

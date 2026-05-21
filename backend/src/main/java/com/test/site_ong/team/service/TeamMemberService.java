@@ -5,12 +5,15 @@ import com.test.site_ong.departments.repo.DepartmentRepository;
 import com.test.site_ong.team.model.TeamMember;
 import com.test.site_ong.team.model.TeamReorderItem;
 import com.test.site_ong.team.repo.TeamMemberRepository;
+import com.test.site_ong.upcoming_project.model.UpcomingProject;
+import com.test.site_ong.upcoming_project.repo.UpcomingProjectRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -22,13 +25,16 @@ public class TeamMemberService {
 
     private final TeamMemberRepository repo;
     private final DepartmentRepository departmentRepo;
+    private final UpcomingProjectRepository projectRepo;
     private final String uploadDir;
 
     public TeamMemberService(TeamMemberRepository repo,
                              DepartmentRepository departmentRepo,
+                             UpcomingProjectRepository projectRepo,
                              @Value("${file.upload-dir:uploads}") String uploadDir) {
         this.repo = repo;
         this.departmentRepo = departmentRepo;
+        this.projectRepo = projectRepo;
         this.uploadDir = uploadDir;
         File dir = new File(uploadDir);
         if (!dir.exists()) {
@@ -110,6 +116,24 @@ public class TeamMemberService {
         List<TeamMember> affected = repo.findAllById(orderMap.keySet());
         affected.forEach(m -> m.setDisplayOrder(orderMap.get(m.getId())));
         repo.saveAll(affected);
+    }
+
+    /** Soft-archive: hide from public page but keep in DB. */
+    public TeamMember setArchived(Long id, boolean archived) {
+        TeamMember m = repo.findById(id).orElse(null);
+        if (m == null) return null;
+        m.setArchived(archived);
+        return repo.save(m);
+    }
+
+    /** Replace the full set of project assignments for a member. */
+    public TeamMember setProjects(Long memberId, List<Long> projectIds) {
+        TeamMember m = repo.findById(memberId).orElse(null);
+        if (m == null) return null;
+        List<UpcomingProject> projects = projectIds == null ? new ArrayList<>()
+                : new ArrayList<>(projectRepo.findAllById(projectIds));
+        m.setProjects(projects);
+        return repo.save(m);
     }
 
     private Set<Department> resolveDepartments(List<Long> ids) {

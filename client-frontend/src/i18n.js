@@ -94,7 +94,10 @@ const resources = {
       team: {
         title: "Echipa Noastră",
         subtitle: "Oamenii din spatele Acces spre Succes",
-        empty: "Echipa va fi anunțată în curând."
+        empty: "Echipa va fi anunțată în curând.",
+        modal: {
+          projects: "Evenimente în care a participat"
+        }
       },
       // Departments Page
       departmentsPage: {
@@ -158,6 +161,9 @@ const resources = {
         back: "Înapoi la Listă",
         support: "Susține Proiectul",
         viewMore: "Vezi Mai Multe"
+      },
+      project: {
+        volunteers: "Voluntari care au participat"
       }
     }
   },
@@ -249,7 +255,10 @@ const resources = {
       team: {
         title: "Our Team",
         subtitle: "The people behind Acces spre Succes",
-        empty: "Our team will be announced soon."
+        empty: "Our team will be announced soon.",
+        modal: {
+          projects: "Events participated in"
+        }
       },
       // Departments Page
       departmentsPage: {
@@ -313,6 +322,9 @@ const resources = {
         back: "Back to List",
         support: "Support This Project",
         viewMore: "View More"
+      },
+      project: {
+        volunteers: "Volunteers who participated"
       }
     }
   }
