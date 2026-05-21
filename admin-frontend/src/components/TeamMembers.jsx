@@ -168,7 +168,7 @@ export default function TeamMembers() {
     };
 
     const handleDelete = async (id) => {
-        if (!window.confirm("Ștergi acest membru din echipă? Această acțiune este permanentă.\n\nDacă vrei doar să îl ascunzi, folosește butonul „Arhivează".")) return;
+        if (!window.confirm("Stergi acest membru din echipa? Aceasta actiune este permanenta.\n\nDaca vrei doar sa il ascunzi, foloseste butonul 'Arhiveaza'.")) return;
         const res = await authFetch(`${API_BASE_URL}/team/${id}`, { method: "DELETE" });
         if (res.ok) {
             setMembers((prev) => prev.filter((m) => m.id !== id));
