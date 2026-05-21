@@ -3,18 +3,18 @@
   "name": "Acces spre Succes - Organizație Non-Profit",
   "icons": [
     {
-      "src": "AccesSpreSuccesLogo.jpeg",
+      "src": "logo.png",
       "sizes": "64x64 32x32 24x24 16x16",
-      "type": "image/jpeg"
+      "type": "image/png"
     },
     {
-      "src": "AccesSpreSuccesLogo.jpeg",
-      "type": "image/jpeg",
+      "src": "logo.png",
+      "type": "image/png",
       "sizes": "192x192"
     },
     {
-      "src": "AccesSpreSuccesLogo.jpeg",
-      "type": "image/jpeg",
+      "src": "logo512.png",
+      "type": "image/png",
       "sizes": "512x512"
     }
   ],

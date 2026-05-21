@@ -76,7 +76,7 @@ const ArticleDetailPage = () => {
         <div className="detail-content">
           <div className="detail-header">
             <img
-              src="/AccesSpreSuccesLogo.jpeg"
+              src="/logo.svg"
               alt="Acces Spre Succes"
               className="detail-logo"
             />

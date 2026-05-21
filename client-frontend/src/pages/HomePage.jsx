@@ -231,7 +231,7 @@ const HomePage = () => {
             variants={logoAnimation}
           >
             <motion.img
-              src="/AccesSpreSuccesLogo.jpeg"
+              src="/logo.svg"
               alt="Acces spre Succes Logo"
               animate={floatingAnimation}
             />
@@ -264,7 +264,7 @@ const HomePage = () => {
       >
         <div className="impact-preview">
           <img
-            src="/AccesSpreSuccesLogo.jpeg"
+            src="/logo.svg"
             alt="Acces spre Succes"
             className="impact-logo"
           />
