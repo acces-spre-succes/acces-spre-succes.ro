@@ -402,7 +402,6 @@ const HomePage = () => {
                           <div className="board-info">
                             <h3 className="board-name">{fullName}</h3>
                             {member.role && <p className="board-position">{member.role}</p>}
-                            {member.bio && <p className="board-bio">{member.bio}</p>}
                             {member.email && (
                               <a className="board-email" href={`mailto:${member.email}`}>
                                 {member.email}

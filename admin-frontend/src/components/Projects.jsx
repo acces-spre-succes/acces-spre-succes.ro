@@ -82,20 +82,23 @@ export default function Projects() {
         fd.append("description", editForm.description.trim());
         if (editImage) fd.append("image", editImage);
         try {
+            // 1. Save title / description / image
             const res = await authFetch(`${API_BASE_URL}/upcoming-projects/${id}`, { method: "PUT", body: fd });
-            if (!res.ok) throw new Error();
-            // Save volunteers separately
-            await authFetch(`${API_BASE_URL}/upcoming-projects/${id}/volunteers`, {
+            if (!res.ok) throw new Error("Eroare la salvarea proiectului.");
+
+            // 2. Save volunteers — use the response body directly to avoid stale-cache issues
+            const volRes = await authFetch(`${API_BASE_URL}/upcoming-projects/${id}/volunteers`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(editVolIds),
             });
-            // Re-fetch this project so we get the updated volunteers list
-            const updated = await authFetch(`${API_BASE_URL}/upcoming-projects/${id}`).then(r => r.json());
+            if (!volRes.ok) throw new Error("Eroare la salvarea voluntarilor.");
+            const updated = await volRes.json();
+
             setProjects(prev => prev.map(p => p.id === id ? updated : p));
             cancelEdit();
-        } catch {
-            alert("Eroare la actualizare.");
+        } catch (err) {
+            alert(err.message || "Eroare la actualizare.");
         } finally {
             setEditSaving(false);
         }

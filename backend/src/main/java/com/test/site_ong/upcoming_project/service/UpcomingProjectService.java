@@ -4,6 +4,7 @@ import com.test.site_ong.team.model.TeamMember;
 import com.test.site_ong.team.repo.TeamMemberRepository;
 import com.test.site_ong.upcoming_project.model.UpcomingProject;
 import com.test.site_ong.upcoming_project.repo.UpcomingProjectRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -91,29 +92,37 @@ public class UpcomingProjectService {
         repository.deleteById(id);
     }
 
-    /** Replace the volunteer list on a project (project-centric assignment). */
+    /**
+     * Replace the volunteer list on a project (project-centric assignment).
+     *
+     * The join table is owned by TeamMember.projects, so we update it from
+     * that side only. We use a clean-slate approach (remove all, then add new)
+     * and compare by ID to avoid any Lombok equals() ambiguity.
+     */
+    @Transactional
     public UpcomingProject setVolunteers(Long projectId, List<Long> memberIds) {
         UpcomingProject project = repository.findById(projectId)
                 .orElseThrow(() -> new RuntimeException("Project not found: " + projectId));
-        List<TeamMember> members = memberIds == null ? new ArrayList<>()
-                : new ArrayList<>(teamMemberRepository.findAllById(memberIds));
 
-        // Sync from both sides to keep the join table consistent
-        // Remove project from members no longer in list
-        for (TeamMember old : new ArrayList<>(project.getVolunteers())) {
-            if (!members.contains(old)) {
-                old.getProjects().remove(project);
-                teamMemberRepository.save(old);
-            }
+        List<Long> safeIds = (memberIds == null) ? new ArrayList<>() : memberIds;
+
+        // Step 1: remove this project from every current volunteer (owning side)
+        for (TeamMember m : new ArrayList<>(project.getVolunteers())) {
+            m.getProjects().removeIf(p -> p.getId().equals(projectId));
+            teamMemberRepository.save(m);
         }
-        // Add project to new members
-        for (TeamMember m : members) {
-            if (!m.getProjects().contains(project)) {
-                m.getProjects().add(project);
-                teamMemberRepository.save(m);
-            }
+
+        // Step 2: add this project to each newly-assigned volunteer (owning side)
+        List<TeamMember> newVolunteers = safeIds.isEmpty()
+                ? new ArrayList<>()
+                : new ArrayList<>(teamMemberRepository.findAllById(safeIds));
+        for (TeamMember m : newVolunteers) {
+            m.getProjects().add(project);
+            teamMemberRepository.save(m);
         }
-        project.setVolunteers(members);
-        return repository.save(project);
+
+        // Update the in-memory inverse collection so the response is accurate
+        project.setVolunteers(newVolunteers);
+        return project;
     }
 }
