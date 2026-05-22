@@ -59,7 +59,10 @@ export default function App() {
     return (
         <div className="admin-container">
             <header className="admin-header">
-                <h1>Panou Administrare ONG</h1>
+                <div className="admin-header__brand">
+                    <img src="/logo.svg" alt="Acces spre Succes" className="admin-header__logo" />
+                    <h1>Panou Administrare ONG</h1>
+                </div>
                 <div className="admin-header__right">
                     {username && <span className="admin-header__user">Conectat ca {username}</span>}
                     <button className="logout-btn" onClick={handleLogout}>Deconectare</button>

@@ -201,18 +201,32 @@ const TeamPage = () => {
               {selectedMember.projects && selectedMember.projects.length > 0 && (
                 <div className="team-modal-projects">
                   <h3 className="team-modal-projects-title">{t('team.modal.projects')}</h3>
-                  <ul className="team-modal-projects-list">
+                  <div className="team-modal-projects-grid">
                     {selectedMember.projects.map((proj) => (
-                      <li key={proj.id}>
-                        <a
-                          href={`/upcoming-projects/${proj.id}`}
-                          className="team-modal-project-link"
-                        >
-                          {proj.title}
-                        </a>
-                      </li>
+                      <a
+                        key={proj.id}
+                        href={`/upcoming-projects/${proj.id}`}
+                        className="team-modal-project-card"
+                      >
+                        <div className="team-modal-project-thumb">
+                          {proj.imagePath ? (
+                            <img
+                              src={`${BACKEND_URL}${proj.imagePath}`}
+                              alt={proj.title}
+                              onError={(e) => { e.target.style.display = 'none'; }}
+                            />
+                          ) : (
+                            <div className="team-modal-project-thumb-placeholder">
+                              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                                <path d="M3 7h18M3 7a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h18a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2M3 7l3-4h12l3 4" strokeLinecap="round" strokeLinejoin="round"/>
+                              </svg>
+                            </div>
+                          )}
+                        </div>
+                        <span className="team-modal-project-title">{proj.title}</span>
+                      </a>
                     ))}
-                  </ul>
+                  </div>
                 </div>
               )}
             </motion.div>

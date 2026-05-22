@@ -254,6 +254,18 @@ body {
     letter-spacing: 0.2px;
 }
 
+.admin-header__brand {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+}
+
+.admin-header__logo {
+    height: 34px;
+    width: auto;
+    flex-shrink: 0;
+}
+
 .admin-header__right {
     display: flex;
     align-items: center;

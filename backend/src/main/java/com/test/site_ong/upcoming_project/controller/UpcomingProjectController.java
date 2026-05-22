@@ -8,6 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/upcoming-projects")
@@ -80,5 +81,17 @@ public class UpcomingProjectController {
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         service.deleteProject(id);
         return ResponseEntity.ok().build();
+    }
+
+    /** Set the volunteer list for a project (admin only). */
+    @PutMapping("/{id}/volunteers")
+    public ResponseEntity<UpcomingProject> setVolunteers(
+            @PathVariable Long id,
+            @RequestBody List<Long> memberIds) {
+        try {
+            return ResponseEntity.ok(service.setVolunteers(id, memberIds));
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 }

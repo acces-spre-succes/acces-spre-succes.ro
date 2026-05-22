@@ -10,14 +10,12 @@ const emptyForm = {
     role: "",
     bio: "",
     departmentIds: [],
-    projectIds: [],
     photo: null,
 };
 
 export default function TeamMembers() {
     const [members, setMembers] = useState([]);
     const [departments, setDepartments] = useState([]);
-    const [projects, setProjects] = useState([]);
     const [filter, setFilter] = useState("ALL");
     const [showArchived, setShowArchived] = useState(false);
     const [form, setForm] = useState(emptyForm);
@@ -34,7 +32,6 @@ export default function TeamMembers() {
     useEffect(() => {
         loadMembers();
         loadDepartments();
-        loadProjects();
     }, []);
 
     const loadMembers = () => {
@@ -51,13 +48,6 @@ export default function TeamMembers() {
             .catch((err) => console.error("Eroare la preluare departamente:", err));
     };
 
-    const loadProjects = () => {
-        authFetch(`${API_BASE_URL}/upcoming-projects/all`)
-            .then((res) => res.json())
-            .then(setProjects)
-            .catch((err) => console.error("Eroare la preluare proiecte:", err));
-    };
-
     const startEdit = (m) => {
         setEditingId(m.id);
         setForm({
@@ -67,7 +57,6 @@ export default function TeamMembers() {
             role: m.role || "",
             bio: m.bio || "",
             departmentIds: (m.departments || []).map((d) => d.id),
-            projectIds: (m.projects || []).map((p) => p.id),
             photo: null,
         });
         setFormNonce((n) => n + 1);
@@ -88,18 +77,6 @@ export default function TeamMembers() {
                 departmentIds: has
                     ? prev.departmentIds.filter((x) => x !== id)
                     : [...prev.departmentIds, id],
-            };
-        });
-    };
-
-    const toggleProject = (id) => {
-        setForm((prev) => {
-            const has = prev.projectIds.includes(id);
-            return {
-                ...prev,
-                projectIds: has
-                    ? prev.projectIds.filter((x) => x !== id)
-                    : [...prev.projectIds, id],
             };
         });
     };
@@ -146,16 +123,6 @@ export default function TeamMembers() {
                 throw new Error(detail);
             }
             const saved = await res.json();
-
-            // Persist project assignments separately
-            if (editingId || saved?.id) {
-                const memberId = editingId || saved.id;
-                await authFetch(`${API_BASE_URL}/team/${memberId}/projects`, {
-                    method: "PUT",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(form.projectIds),
-                });
-            }
 
             cancelEdit();
             loadMembers();
@@ -393,37 +360,6 @@ export default function TeamMembers() {
                                         onChange={() => toggleDepartment(d.id)}
                                     />
                                     {d.name}
-                                </label>
-                            ))}
-                        </div>
-                    )}
-                </div>
-
-                <div>
-                    <p style={{ margin: "0 0 6px 0", fontWeight: 600, color: "#1a202c" }}>
-                        Proiecte / evenimente în care a participat
-                    </p>
-                    {projects.length === 0 ? (
-                        <p style={{ color: "#888", fontSize: "13px" }}>
-                            Nu există proiecte încă.
-                        </p>
-                    ) : (
-                        <div style={{ display: "flex", flexWrap: "wrap", gap: "8px 16px" }}>
-                            {projects.map((p) => (
-                                <label
-                                    key={p.id}
-                                    style={{ display: "flex", alignItems: "center", gap: "6px", cursor: "pointer", fontSize: "14px" }}
-                                >
-                                    <input
-                                        type="checkbox"
-                                        style={{ width: "auto", margin: 0 }}
-                                        checked={form.projectIds.includes(p.id)}
-                                        onChange={() => toggleProject(p.id)}
-                                    />
-                                    {p.title}
-                                    {p.completed && (
-                                        <span style={{ fontSize: "11px", color: "#888" }}>(finalizat)</span>
-                                    )}
                                 </label>
                             ))}
                         </div>
