@@ -89,6 +89,7 @@ public class SecurityConfig {
 
                 // Public reads for the public site
                 .requestMatchers(HttpMethod.GET, "/api/articles", "/api/articles/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/projects", "/api/projects/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/upcoming-projects", "/api/upcoming-projects/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/completed-projects", "/api/completed-projects/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/team", "/api/team/**").permitAll()

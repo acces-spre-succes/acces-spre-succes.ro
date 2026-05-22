@@ -7,7 +7,8 @@ import { API_BASE_URL, BACKEND_URL } from '../config';
 import './DetailPage.css';
 
 const ProjectDetailPage = () => {
-  const { id } = useParams();
+  // New slug-based route uses :slug; legacy routes use :id
+  const { slug, id } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
   const { t } = useTranslation();
@@ -20,21 +21,28 @@ const ProjectDetailPage = () => {
   // Lightbox
   const [lightboxIdx, setLightboxIdx] = useState(null);
 
-  const isUpcoming = location.pathname.includes('upcoming');
-  const endpoint   = isUpcoming ? 'upcoming-projects' : 'completed-projects';
-  const backPath   = isUpcoming ? '/upcoming-projects' : '/completed-projects';
+  // For legacy ID routes, derive endpoint from path
+  const legacyIsUpcoming = location.pathname.startsWith('/upcoming-projects/');
+  const legacyEndpoint   = legacyIsUpcoming ? 'upcoming-projects' : 'completed-projects';
 
   useEffect(() => {
     const fetchAll = async () => {
       try {
         setLoading(true);
-        const [projRes, upRes, compRes] = await Promise.all([
-          axios.get(`${API_BASE_URL}/${endpoint}/${id}`),
-          axios.get(`${API_BASE_URL}/event-photos?projectId=${id}&projectType=UPCOMING`),
-          axios.get(`${API_BASE_URL}/event-photos?projectId=${id}&projectType=COMPLETED`),
+        // Slug-based lookup hits the unified /api/projects/:slug endpoint
+        const projectUrl = slug
+          ? `${API_BASE_URL}/projects/${slug}`
+          : `${API_BASE_URL}/${legacyEndpoint}/${id}`;
+
+        const projRes = await axios.get(projectUrl);
+        const proj = projRes.data;
+        setProject(proj);
+
+        // Fetch event photos using the resolved project ID
+        const [upRes, compRes] = await Promise.all([
+          axios.get(`${API_BASE_URL}/event-photos?projectId=${proj.id}&projectType=UPCOMING`),
+          axios.get(`${API_BASE_URL}/event-photos?projectId=${proj.id}&projectType=COMPLETED`),
         ]);
-        setProject(projRes.data);
-        // Combine both types (a project may have photos from when it was either state)
         const combined = [...(upRes.data || []), ...(compRes.data || [])];
         combined.sort((a, b) => (a.displayOrder ?? 9999) - (b.displayOrder ?? 9999));
         setPhotos(combined);
@@ -47,7 +55,7 @@ const ProjectDetailPage = () => {
       }
     };
     fetchAll();
-  }, [id, endpoint]);
+  }, [slug, id, legacyEndpoint]);
 
   // Keyboard navigation for lightbox
   const closeLightbox = useCallback(() => setLightboxIdx(null), []);
@@ -76,11 +84,14 @@ const ProjectDetailPage = () => {
     );
   }
 
+  // Determine back path from the loaded project's completed flag (works for both slug and id routes)
+  const backPath = project?.completed ? '/completed-projects' : '/upcoming-projects';
+
   if (error || !project) {
     return (
       <div className="error-container">
         <p>{error || t('common.notFound')}</p>
-        <button className="btn btn-primary" onClick={() => navigate(backPath)}>
+        <button className="btn btn-primary" onClick={() => navigate(-1)}>
           {t('common.goBack')}
         </button>
       </div>
@@ -163,9 +174,6 @@ const ProjectDetailPage = () => {
                       <span className="detail-volunteer-chip__name">
                         {v.firstName} {v.lastName}
                       </span>
-                      {v.role && (
-                        <span className="detail-volunteer-chip__role">{v.role}</span>
-                      )}
                     </div>
                   ))}
                 </div>

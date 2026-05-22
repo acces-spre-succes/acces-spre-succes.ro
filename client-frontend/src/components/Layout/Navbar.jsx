@@ -53,15 +53,15 @@ const Navbar = () => {
             {t('nav.articles')}
           </Link>
           <Link
-            to="/echipa"
-            className={`nav-link ${isActive('/echipa')}`}
+            to="/team"
+            className={`nav-link ${isActive('/team')}`}
             onClick={closeMenu}
           >
             {t('nav.team')}
           </Link>
           <Link
-            to="/departamente"
-            className={`nav-link ${isActive('/departamente')}`}
+            to="/departments"
+            className={`nav-link ${isActive('/departments')}`}
             onClick={closeMenu}
           >
             {t('nav.departments')}

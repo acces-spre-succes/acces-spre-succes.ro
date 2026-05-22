@@ -205,7 +205,7 @@ const TeamPage = () => {
                     {selectedMember.projects.map((proj) => (
                       <a
                         key={proj.id}
-                        href={`/upcoming-projects/${proj.id}`}
+                        href={`/projects/${proj.slug || proj.id}`}
                         className="team-modal-project-card"
                       >
                         <div className="team-modal-project-thumb">

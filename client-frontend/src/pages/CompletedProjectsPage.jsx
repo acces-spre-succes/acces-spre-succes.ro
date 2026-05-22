@@ -31,8 +31,8 @@ const CompletedProjectsPage = () => {
     }
   };
 
-  const handleProjectClick = (projectId) => {
-    navigate(`/completed-projects/${projectId}`);
+  const handleProjectClick = (project) => {
+    navigate(`/projects/${project.slug || project.id}`);
   };
 
   const fadeInUp = {
@@ -132,7 +132,7 @@ const CompletedProjectsPage = () => {
                     <p className="project-description">{project.description}</p>
                     <button
                       className="btn btn-learn-more"
-                      onClick={() => handleProjectClick(project.id)}
+                      onClick={() => handleProjectClick(project)}
                     >
                       {t('common.learnMore')}
                     </button>

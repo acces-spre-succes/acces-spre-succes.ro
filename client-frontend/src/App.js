@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Navbar from './components/Layout/Navbar';
 import Footer from './components/Layout/Footer';
 import HomePage from './pages/HomePage';
@@ -27,17 +27,22 @@ function App() {
             <Route path="/" element={<HomePage />} />
             <Route path="/articles" element={<ArticlesPage />} />
             <Route path="/articles/:id" element={<ArticleDetailPage />} />
+            <Route path="/team" element={<TeamPage />} />
+            <Route path="/departments" element={<DepartmentsPage />} />
             <Route path="/upcoming-projects" element={<UpcomingProjectsPage />} />
-            <Route path="/upcoming-projects/:id" element={<ProjectDetailPage />} />
             <Route path="/completed-projects" element={<CompletedProjectsPage />} />
+            {/* New slug-based project detail */}
+            <Route path="/projects/:slug" element={<ProjectDetailPage />} />
+            {/* Legacy ID-based routes — kept so old bookmarks still work */}
+            <Route path="/upcoming-projects/:id" element={<ProjectDetailPage />} />
             <Route path="/completed-projects/:id" element={<ProjectDetailPage />} />
             <Route path="/achievements" element={<AchievementsPage />} />
-            <Route path="/echipa" element={<TeamPage />} />
-            <Route path="/team" element={<TeamPage />} />
-            <Route path="/departamente" element={<DepartmentsPage />} />
             <Route path="/donate" element={<DonatePage />} />
             <Route path="/checkout" element={<CheckoutPage />} />
             <Route path="/return" element={<ReturnPage />} />
+            {/* Romanian-path redirects for old bookmarks */}
+            <Route path="/echipa" element={<Navigate to="/team" replace />} />
+            <Route path="/departamente" element={<Navigate to="/departments" replace />} />
           </Routes>
         </main>
         <Footer />

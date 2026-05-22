@@ -32,6 +32,14 @@ public class UpcomingProject {
     private Boolean completed = false;
 
     /**
+     * URL-friendly slug derived from the title (e.g. "femeia-intre-suflet-si-putere").
+     * Generated once on creation; not changed when the title is edited so existing
+     * links never break.
+     */
+    @Column(unique = true)
+    private String slug;
+
+    /**
      * Team members who volunteered / participated in this project.
      * Mapped-by the join table declared on TeamMember.projects.
      */
