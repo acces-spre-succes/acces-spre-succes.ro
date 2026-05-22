@@ -641,6 +641,25 @@ textarea {
 @media (max-width: 768px) {
     .admin-content { flex-direction: column; }
 
+    /* ── Header: keep only logo + logout, drop text that overflows ── */
+    .admin-header {
+        padding: 0 1rem;
+    }
+
+    .admin-header h1 {
+        display: none;
+    }
+
+    .admin-header__user {
+        display: none;
+    }
+
+    .logout-btn {
+        font-size: 0.8rem;
+        padding: 5px 10px;
+    }
+
+    /* ── Sidebar becomes horizontal nav strip ── */
     .sidebar {
         width: 100%;
         flex-direction: column;
