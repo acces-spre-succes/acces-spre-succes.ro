@@ -243,6 +243,21 @@ const HomePage = () => {
         variants={fadeInUp}
       >
         <ColorBends />
+
+        {/* ── Children's drawings — peeking in from the sides ── */}
+        <motion.img src="/drawings/bunny.png"    aria-hidden="true" alt="" className="hero-drawing hero-drawing--bunny"
+          animate={{ y: [0, -13, 0] }} transition={{ duration: 4.2, repeat: Infinity, ease: 'easeInOut', delay: 0 }} />
+        <motion.img src="/drawings/person-1.png" aria-hidden="true" alt="" className="hero-drawing hero-drawing--person1"
+          animate={{ y: [0, -10, 3, 0] }} transition={{ duration: 3.8, repeat: Infinity, ease: 'easeInOut', delay: 0.8 }} />
+        <motion.img src="/drawings/pig.png"      aria-hidden="true" alt="" className="hero-drawing hero-drawing--pig"
+          animate={{ y: [0, -8, 2, 0] }} transition={{ duration: 4.6, repeat: Infinity, ease: 'easeInOut', delay: 1.5 }} />
+        <motion.img src="/drawings/ladybug.png"  aria-hidden="true" alt="" className="hero-drawing hero-drawing--ladybug"
+          animate={{ y: [0, -14, 0] }} transition={{ duration: 3.6, repeat: Infinity, ease: 'easeInOut', delay: 0.3 }} />
+        <motion.img src="/drawings/mouse.png"    aria-hidden="true" alt="" className="hero-drawing hero-drawing--mouse"
+          animate={{ y: [0, -11, 2, 0] }} transition={{ duration: 4.0, repeat: Infinity, ease: 'easeInOut', delay: 1.1 }} />
+        <motion.img src="/drawings/person-2.png" aria-hidden="true" alt="" className="hero-drawing hero-drawing--person2"
+          animate={{ y: [0, -9, 0] }} transition={{ duration: 4.4, repeat: Infinity, ease: 'easeInOut', delay: 1.8 }} />
+
         <div className="hero-content container">
           <motion.div
             className="hero-logo"

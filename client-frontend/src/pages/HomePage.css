@@ -65,6 +65,81 @@
   flex-wrap: wrap;
 }
 
+/* ── Hero drawings ────────────────────────────────────────────────────────
+   Absolutely positioned inside .hero (overflow:hidden), so they are
+   naturally clipped at the hero's edges — giving the "peeking in" effect
+   on every screen size without any z-index fighting with the navbar.
+──────────────────────────────────────────────────────────────────────── */
+.hero-drawing {
+  position: absolute;
+  pointer-events: none;
+  z-index: 3;
+  opacity: 0.82;
+  filter: drop-shadow(2px 5px 8px rgba(0, 0, 0, 0.15));
+  user-select: none;
+}
+
+/* ── Left side ── */
+.hero-drawing--bunny {
+  width: 148px;
+  left: -42px;
+  top: 10%;
+  transform: rotate(7deg);
+}
+.hero-drawing--person1 {
+  width: 132px;
+  left: -38px;
+  top: 48%;
+  transform: rotate(-6deg);
+}
+.hero-drawing--pig {
+  width: 138px;
+  left: -30px;
+  bottom: 7%;
+  transform: rotate(5deg);
+}
+
+/* ── Right side ── */
+.hero-drawing--ladybug {
+  width: 120px;
+  right: -28px;
+  top: 7%;
+  transform: rotate(-10deg);
+}
+.hero-drawing--mouse {
+  width: 138px;
+  right: -38px;
+  top: 42%;
+  transform: rotate(7deg);
+}
+.hero-drawing--person2 {
+  width: 118px;
+  right: -32px;
+  bottom: 6%;
+  transform: rotate(-7deg);
+}
+
+/* ── Tablet: slightly smaller ── */
+@media (max-width: 1024px) {
+  .hero-drawing--bunny   { width: 110px; left: -30px; }
+  .hero-drawing--person1 { width: 95px;  left: -28px; }
+  .hero-drawing--pig     { width: 100px; left: -20px; }
+  .hero-drawing--ladybug { width: 88px;  right: -20px; }
+  .hero-drawing--mouse   { width: 100px; right: -28px; }
+  .hero-drawing--person2 { width: 88px;  right: -22px; }
+}
+
+/* ── Mobile: show only corner ones, small ── */
+@media (max-width: 600px) {
+  .hero-drawing--person1 { display: none; }
+  .hero-drawing--pig     { display: none; }
+  .hero-drawing--mouse   { display: none; }
+
+  .hero-drawing--bunny   { width: 80px; left: -18px; top: 8%; }
+  .hero-drawing--ladybug { width: 72px; right: -14px; top: 6%; }
+  .hero-drawing--person2 { width: 74px; right: -16px; bottom: 4%; }
+}
+
 /* About Section */
 .about-section {
   background-color: var(--white);
@@ -458,8 +533,9 @@
     scroll-snap-type: x mandatory;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
-    /* Side padding so first/last card float with visible corners */
-    padding: 0.75rem;
+    /* Extra bottom padding so the card drop-shadow isn't clipped
+       (overflow-x:auto forces overflow-y to auto, which clips the shadow) */
+    padding: 0.75rem 0.75rem 2rem;
     scroll-padding-left: 0.75rem;
   }
   .vol-carousel-viewport::-webkit-scrollbar { display: none; }
