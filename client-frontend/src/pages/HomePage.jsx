@@ -45,9 +45,23 @@ const HomePage = () => {
     }
   }, [location.search]);
 
-  // Fetch departments + members in parallel
+  // Fetch departments + members in parallel.
+  // Stale-while-revalidate: show cached data immediately (instant paint even
+  // on a cold backend), then silently update when the fresh response arrives.
   useEffect(() => {
     let cancelled = false;
+
+    // --- Paint cached data immediately ---
+    try {
+      const cachedDepts = localStorage.getItem('home_departments');
+      const cachedMembers = localStorage.getItem('home_members');
+      if (cachedDepts) setDepartments(JSON.parse(cachedDepts));
+      if (cachedMembers) setAllMembers(JSON.parse(cachedMembers));
+    } catch {
+      // localStorage unavailable or corrupt — safe to ignore
+    }
+
+    // --- Fetch fresh data in the background ---
     Promise.all([
       axios.get(`${API_BASE_URL}/departments`).then((r) => r.data || []),
       axios.get(`${API_BASE_URL}/team`).then((r) => r.data || []),
@@ -56,6 +70,12 @@ const HomePage = () => {
         if (cancelled) return;
         setDepartments(depts);
         setAllMembers(members);
+        try {
+          localStorage.setItem('home_departments', JSON.stringify(depts));
+          localStorage.setItem('home_members', JSON.stringify(members));
+        } catch {
+          // Storage full or blocked — safe to ignore
+        }
       })
       .catch((err) => {
         console.error('Error fetching team data:', err);

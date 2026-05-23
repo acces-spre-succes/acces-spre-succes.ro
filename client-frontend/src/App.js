@@ -12,6 +12,7 @@ import AchievementsPage from './pages/AchievementsPage';
 import DonatePage from './pages/DonatePage';
 import TeamPage from './pages/TeamPage';
 import DepartmentsPage from './pages/DepartmentsPage';
+import FloatingDrawings from './components/FloatingDrawings';
 import './styles/GlobalStyles.css';
 import './i18n';
 import CheckoutPage from "./pages/CheckoutPage";
@@ -21,6 +22,7 @@ function App() {
   return (
     <Router>
       <div className="App">
+        <FloatingDrawings />
         <Navbar />
         <main>
           <Routes>

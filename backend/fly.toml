@@ -36,7 +36,7 @@ primary_region = "fra"
   # keeps the bill at near-zero. Flip to `false` if cold starts are unacceptable.
   auto_stop_machines = "stop"
   auto_start_machines = true
-  min_machines_running = 0
+  min_machines_running = 1
   processes = ["app"]
 
 [[vm]]

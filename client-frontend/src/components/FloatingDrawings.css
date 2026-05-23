@@ -1,0 +1,44 @@
+/* ── Floating children's drawings ────────────────────────────────────────
+   Fixed overlay that covers the viewport. pointer-events: none means no
+   click/hover is ever swallowed by these decorative elements.
+   overflow: hidden clips the parts of drawings that extend past the viewport
+   edge, giving the "peeking in from the side" illusion.
+──────────────────────────────────────────────────────────────────────── */
+
+.fd-wrapper {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;          /* above page background, below modals/navbar */
+  overflow: hidden;
+}
+
+.fd-item {
+  position: absolute;
+  transform: rotate(var(--fd-rotate));
+  transform-origin: center bottom;
+  will-change: transform;
+}
+
+.fd-img {
+  width: var(--fd-size);
+  height: auto;
+  display: block;
+  opacity: 0.88;
+  /* drop-shadow follows the actual ink outline (not the bounding box)
+     because the PNG background is already transparent (removebg).       */
+  filter: drop-shadow(2px 5px 8px rgba(0, 0, 0, 0.20));
+}
+
+/* ── Responsive: only show on screens wide enough to have side gutters ── */
+@media (max-width: 1100px) {
+  .fd-wrapper {
+    display: none;
+  }
+}
+
+/* ── On very wide screens, keep drawings from drifting too far from content ── */
+@media (min-width: 1600px) {
+  .fd-item.fd-left  { left:  max(var(--fd-offset, -50px), calc((100vw - 1400px) / 2 * -0.6)) !important; }
+  .fd-item.fd-right { right: max(var(--fd-offset, -50px), calc((100vw - 1400px) / 2 * -0.6)) !important; }
+}
