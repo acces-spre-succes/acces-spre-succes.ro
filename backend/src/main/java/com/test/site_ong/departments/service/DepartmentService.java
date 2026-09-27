@@ -1,4 +1,4 @@
-﻿package com.test.site_ong.departments.service;
+package com.test.site_ong.departments.service;
 
 import com.test.site_ong.departments.model.Department;
 import com.test.site_ong.departments.repo.DepartmentRepository;
