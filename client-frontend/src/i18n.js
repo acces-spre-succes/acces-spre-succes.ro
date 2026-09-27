@@ -1,4 +1,4 @@
-import i18n from 'i18next';
+﻿import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 
 const resources = {
@@ -35,9 +35,8 @@ const resources = {
           visionText: "O Românie în care fiecare copil are acces la educație de calitate și șanse egale de succes."
         },
         board: {
-          title: "Echipa Noastră",
-          subtitle: "Membrii Consiliului de Administrație",
-          position: "Poziție"
+          title: "Consiliu Director",
+          subtitle: "Persoanele care ghidează misiunea și valorile asociației"
         },
         departments: {
           title: "Departamentele Noastre",
@@ -46,10 +45,6 @@ const resources = {
           empty: "Nu există încă membri afișați public pentru acest departament.",
           previous: "Departamentul anterior",
           next: "Departamentul următor"
-        },
-        board: {
-          title: "Consiliu Director",
-          subtitle: "Persoanele care ghidează misiunea și valorile asociației"
         },
         scroll: {
           eyebrow: "Impactul nostru",
@@ -152,6 +147,19 @@ const resources = {
         impactFutureTitle: "Pregătire pentru viitor",
         impactFutureText: "Îi ajutăm să-și descopere talentele și să ia decizii informate despre parcursul lor - fie că e vorba de liceu, facultate sau o meserie."
       },
+      // Cookie consent
+      cookies: {
+        message: "Folosim cookie-uri pentru a îmbunătăți experiența ta pe site. Cookie-urile necesare sunt întotdeauna active.",
+        acceptAll: "Acceptă toate",
+        necessaryOnly: "Doar necesare",
+        learnMore: "Termeni și Condiții"
+      },
+      // Terms & Conditions
+      terms: {
+        title: "Termeni și Condiții",
+        subtitle: "Vă rugăm să citiți cu atenție acești termeni înainte de a utiliza site-ul nostru.",
+        lastUpdated: "Ultima actualizare"
+      },
       // Common
       common: {
         loading: "Se încarcă...",
@@ -161,7 +169,9 @@ const resources = {
         learnMore: "Află Mai Multe",
         back: "Înapoi la Listă",
         support: "Susține Proiectul",
-        viewMore: "Vezi Mai Multe"
+        viewMore: "Vezi Mai Multe",
+        goBack: "Înapoi",
+        notFound: "Pagina nu a fost găsită"
       },
       project: {
         volunteers: "Voluntari care au participat"
@@ -314,6 +324,19 @@ const resources = {
         impactFutureTitle: "Building a path forward",
         impactFutureText: "We help them discover their strengths and make informed choices about their future - whether that's high school, university or a trade."
       },
+      // Cookie consent
+      cookies: {
+        message: "We use cookies to improve your experience on our site. Necessary cookies are always active.",
+        acceptAll: "Accept all",
+        necessaryOnly: "Necessary only",
+        learnMore: "Terms & Conditions"
+      },
+      // Terms & Conditions
+      terms: {
+        title: "Terms and Conditions",
+        subtitle: "Please read these terms carefully before using our website.",
+        lastUpdated: "Last updated"
+      },
       // Common
       common: {
         loading: "Loading...",
@@ -323,7 +346,9 @@ const resources = {
         learnMore: "Learn More",
         back: "Back to List",
         support: "Support This Project",
-        viewMore: "View More"
+        viewMore: "View More",
+        goBack: "Go Back",
+        notFound: "Page not found"
       },
       project: {
         volunteers: "Volunteers who participated"

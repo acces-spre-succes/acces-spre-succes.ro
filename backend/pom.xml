@@ -78,6 +78,16 @@
 			<version>29.0.0</version>
 		</dependency>
 
+		<!-- In-process cache (Caffeine) for public read endpoints -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-cache</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.github.ben-manes.caffeine</groupId>
+			<artifactId>caffeine</artifactId>
+		</dependency>
+
 		<!-- Auth: Spring Security + JWT -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
