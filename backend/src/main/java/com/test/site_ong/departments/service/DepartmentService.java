@@ -6,6 +6,8 @@ import com.test.site_ong.team.model.TeamMember;
 import com.test.site_ong.team.repo.TeamMemberRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,6 +19,7 @@ public class DepartmentService {
     private final DepartmentRepository repo;
     private final TeamMemberRepository memberRepo;
 
+    @Cacheable("departments")
     public List<Department> getAll() {
         return repo.findAllByOrderByDisplayOrderAscIdAsc();
     }
@@ -25,6 +28,7 @@ public class DepartmentService {
         return repo.findById(id).orElse(null);
     }
 
+    @CacheEvict(value = "departments", allEntries = true)
     public Department create(String name, String description, Integer displayOrder) {
         Department d = new Department();
         d.setName(name.trim());
@@ -33,6 +37,7 @@ public class DepartmentService {
         return repo.save(d);
     }
 
+    @CacheEvict(value = "departments", allEntries = true)
     public Department update(Long id, String name, String description, Integer displayOrder) {
         Department d = repo.findById(id).orElse(null);
         if (d == null) return null;
@@ -49,6 +54,7 @@ public class DepartmentService {
      * would be too aggressive (would risk deleting members on dept delete).
      */
     @Transactional
+    @CacheEvict(value = "departments", allEntries = true)
     public boolean delete(Long id) {
         Department d = repo.findById(id).orElse(null);
         if (d == null) return false;

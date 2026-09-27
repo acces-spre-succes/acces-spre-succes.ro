@@ -2,6 +2,8 @@ package com.test.site_ong.articles.service;
 
 import com.test.site_ong.articles.repo.ArticleRepository;
 import com.test.site_ong.articles.model.Article;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -24,6 +26,7 @@ public class ArticleService {
         }
     }
 
+    @Cacheable("articles")
     public List<Article> getAll(){
         return articleRepository.findAll();
     }
@@ -32,6 +35,7 @@ public class ArticleService {
         return articleRepository.findById(id).orElse(null);
     }
 
+    @CacheEvict(value = "articles", allEntries = true)
     public Article addArticle(String title, String description, MultipartFile image) throws IOException {
         Article article = new Article();
         article.setTitle(title);
@@ -43,6 +47,7 @@ public class ArticleService {
         return articleRepository.save(article);
     }
 
+    @CacheEvict(value = "articles", allEntries = true)
     public Article updateArticle(Long id, String title, String description, MultipartFile image) throws IOException {
         Article article = articleRepository.findById(id).orElse(null);
         if (article == null) return null;
@@ -54,6 +59,7 @@ public class ArticleService {
         return articleRepository.save(article);
     }
 
+    @CacheEvict(value = "articles", allEntries = true)
     public void deleteArticle(Long id){
         articleRepository.deleteById(id);
     }

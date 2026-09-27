@@ -1,0 +1,53 @@
+.terms-page {
+  min-height: 70vh;
+}
+
+.terms-content {
+  background: var(--white);
+}
+
+.terms-body {
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.terms-updated {
+  font-size: 0.9rem;
+  color: var(--gray-500);
+  margin-bottom: 2.5rem;
+  font-style: italic;
+}
+
+.terms-body h2 {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--primary);
+  margin: 2rem 0 0.75rem;
+}
+
+.terms-body p,
+.terms-body li {
+  font-size: 1rem;
+  color: var(--gray-700);
+  line-height: 1.75;
+  margin-bottom: 0.75rem;
+}
+
+.terms-body ul {
+  padding-left: 1.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.terms-body li {
+  margin-bottom: 0.4rem;
+}
+
+.terms-body a {
+  color: var(--primary);
+  text-decoration: underline;
+}
+
+.terms-body a:hover {
+  color: var(--primary-dark);
+}

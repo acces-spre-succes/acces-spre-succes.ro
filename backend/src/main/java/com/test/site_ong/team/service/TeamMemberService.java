@@ -5,6 +5,8 @@ import com.test.site_ong.departments.repo.DepartmentRepository;
 import com.test.site_ong.team.model.TeamMember;
 import com.test.site_ong.team.repo.TeamMemberRepository;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -33,6 +35,7 @@ public class TeamMemberService {
         }
     }
 
+    @Cacheable("team")
     public List<TeamMember> getAll() {
         return repo.findAllByOrderByDisplayOrderAscIdAsc();
     }
@@ -45,6 +48,7 @@ public class TeamMemberService {
         return repo.findById(id).orElse(null);
     }
 
+    @CacheEvict(value = "team", allEntries = true)
     public TeamMember create(String firstName,
                              String lastName,
                              String email,
@@ -67,6 +71,7 @@ public class TeamMemberService {
         return repo.save(m);
     }
 
+    @CacheEvict(value = "team", allEntries = true)
     public TeamMember update(Long id,
                              String firstName,
                              String lastName,
@@ -94,6 +99,7 @@ public class TeamMemberService {
         return repo.save(m);
     }
 
+    @CacheEvict(value = "team", allEntries = true)
     public boolean delete(Long id) {
         if (!repo.existsById(id)) return false;
         repo.deleteById(id);

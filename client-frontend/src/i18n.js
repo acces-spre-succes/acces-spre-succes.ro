@@ -120,6 +120,19 @@ const resources = {
         impactFutureTitle: "Viitor",
         impactFutureText: "Construiești un viitor mai bun pentru comunitate."
       },
+      // Cookie consent
+      cookies: {
+        message: "Folosim cookie-uri pentru a îmbunătăți experiența ta pe site. Cookie-urile necesare sunt întotdeauna active.",
+        acceptAll: "Acceptă toate",
+        necessaryOnly: "Doar necesare",
+        learnMore: "Termeni și Condiții"
+      },
+      // Terms & Conditions
+      terms: {
+        title: "Termeni și Condiții",
+        subtitle: "Vă rugăm să citiți cu atenție acești termeni înainte de a utiliza site-ul nostru.",
+        lastUpdated: "Ultima actualizare"
+      },
       // Common
       common: {
         loading: "Se încarcă...",
@@ -129,7 +142,9 @@ const resources = {
         learnMore: "Află Mai Multe",
         back: "Înapoi la Listă",
         support: "Susține Proiectul",
-        viewMore: "Vezi Mai Multe"
+        viewMore: "Vezi Mai Multe",
+        goBack: "Înapoi",
+        notFound: "Pagina nu a fost găsită"
       }
     }
   },
@@ -251,6 +266,19 @@ const resources = {
         impactFutureTitle: "Future",
         impactFutureText: "You help build a better future for the community."
       },
+      // Cookie consent
+      cookies: {
+        message: "We use cookies to improve your experience on our site. Necessary cookies are always active.",
+        acceptAll: "Accept all",
+        necessaryOnly: "Necessary only",
+        learnMore: "Terms & Conditions"
+      },
+      // Terms & Conditions
+      terms: {
+        title: "Terms and Conditions",
+        subtitle: "Please read these terms carefully before using our website.",
+        lastUpdated: "Last updated"
+      },
       // Common
       common: {
         loading: "Loading...",
@@ -260,7 +288,9 @@ const resources = {
         learnMore: "Learn More",
         back: "Back to List",
         support: "Support This Project",
-        viewMore: "View More"
+        viewMore: "View More",
+        goBack: "Go Back",
+        notFound: "Page not found"
       }
     }
   }
