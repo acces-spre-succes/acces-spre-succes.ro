@@ -14,6 +14,7 @@ import DonatePage from './pages/DonatePage';
 import TeamPage from './pages/TeamPage';
 import DepartmentsPage from './pages/DepartmentsPage';
 import TermsPage from './pages/TermsPage';
+import BucurieLaCutiePrivacyPage from './pages/BucurieLaCutiePrivacyPage';
 import './styles/GlobalStyles.css';
 import './i18n';
 import CheckoutPage from "./pages/CheckoutPage";
@@ -43,6 +44,7 @@ function App() {
             <Route path="/checkout" element={<CheckoutPage />} />
             <Route path="/return" element={<ReturnPage />} />
             <Route path="/termeni-si-conditii" element={<TermsPage />} />
+            <Route path="/bucurie-la-cutie/privacy" element={<BucurieLaCutiePrivacyPage />} />
             {/* Romanian-path redirects for old bookmarks */}
             <Route path="/echipa" element={<Navigate to="/team" replace />} />
             <Route path="/departamente" element={<Navigate to="/departments" replace />} />
